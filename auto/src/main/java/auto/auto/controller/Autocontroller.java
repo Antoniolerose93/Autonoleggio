@@ -134,7 +134,8 @@ public class Autocontroller {
     @PostMapping("/delete/{id}")
         public String delete (@PathVariable("id") Integer id) {
         Auto auto = autorepository.findById(id).get();
-        return "redirect:/vetture";
+        autorepository.deleteById(id);
+        return "redirect:/auto/";
     }
 
 

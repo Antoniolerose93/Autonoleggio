@@ -15,7 +15,7 @@
         <div class="content">
             <h1 class="text-center py-3">Auto disponibili</h1>
             <hr/>
-            <H3 class="text-center mb-3">Scegli la tua auto</H3>
+            <h4 class="text-center mb-3">Scegli la tua auto</h4>
                 <form th:action="@{/auto/}" method="get">
                     <div class="row">                
                         <div class="col-3 mb-3">            
@@ -53,11 +53,27 @@
                             <img th:src="${auto.foto}" class="car-img" alt="Immagine auto">
                                 <div class="card-body">
                                     <h5 class="card-title" th:text="${auto.brand} + ' ' + ${auto.model}"></h5>
-                                        <p class="card-text" th:text="${auto.description}"></p>
-                                        <p class="card-text"><strong>Colore:</strong> <span th:text="${auto.color}"></span></p>
-                                        <p class="card-text"><strong>Prezzo:</strong> €<span th:text="${auto.price}"></span></p>
-                                        <p class="card-text"><strong>Alimentazione:</strong> <span th:text="${auto.fuel}"></span></p>
-                                        <a th:href="@{/auto/show/{id}(id=${auto.id})}" class="btn btn-primary w-100">Dettagli</a>
+                                        <div class="row mb-2">
+                                            <div class ="col">
+                                                <p class="card-text"><strong>Colore:</strong> <span th:text="${auto.color}"></span></p>
+                                            </div>
+                                            <div class="col">
+                                                <p class="card-text"><strong>Prezzo mensile:</strong> €<span th:text="${auto.price}"></span></p>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col">
+                                                <p class="card-text"><strong>Alimentazione:</strong> <span th:text="${auto.fuel}"></span></p>
+                                            </div>
+                                        </div>                                     
+                                        <div class="d-flex justify-content-between">
+                                            <a th:href="@{/auto/show/{id}(id=${auto.id})}" class="btn btn-primary">Dettagli</a>
+                                            <a th:href="@{/auto/edit/{id}(id=${auto.id})}" class="btn btn-warning">Modifica</a>
+                                            <form th:action="@{/auto/delete/{id}(id=${auto.id})}"
+                                            method="post" onsubmit="return confirm('Sei sicuro di voler cancellare questa auto?');">
+                                                <button type="submit" class="btn btn-danger">Elimina</button>
+                                            </form>
+                                        </div>
                                 </div>
                         </div>
                     </div>

@@ -32,6 +32,7 @@ public class Auto {
 
     private int price;
 
+    @NotNull
     private String description;
 
     private String fuel;
