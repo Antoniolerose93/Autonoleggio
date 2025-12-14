@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.8/css/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/app.css}">
+    <title>Noleggio Auto</title>
+</head>
+
+<body>
+    <nav th:replace="~{navbar :: navbar('Auto')}"></nav> 
+    <div class="container">
+        <div class="content">
+            <h1 class="text-center py-3">Auto disponibili</h1>
+            <hr/>
+            <H3 class="text-center mb-3">Scegli la tua auto</H3>
+                <form th:action="@{/auto/}" method="get">
+                    <div class="row">                
+                        <div class="col-3 mb-3">            
+                            <select name="brand" class="form-select form-select-lg mb-3" aria-label="Seleziona il brand">
+                                <option selected>Scegli il brand</option>
+                                <option value="Alfa Romeo" th:selected="${brandselezionato =='Alfa Romeo'}">Alfa Romeo</option>
+                                <option value="BMW" th:selected="${brandselezionato =='BMW'}">BMW</option>
+                                <option value="Audi" th:selected="${brandselezionato =='Audi'}">Audi</option>
+                                <option value="Cupra" th:selected="${brandselezionato =='Cupra'}">Cupra</option>
+                                <option value="Mercedes" th:selected="${brandselezionato =='Mercedes'}">Mercedes</option>
+                            </select>
+                        </div>
+                        <div class="col-3 mb-3">
+                            <select name="modello" class="form-select form-select-lg mb-3" aria-label="Seleziona modello">
+                                <option value="">Scegli il modello</option>
+                                <option th:each="m : ${modelli}" th:value="${m}" th:text="${m}" th:selected ="${modelloSelezionato ==m}"></option>
+                            </select>
+                        </div>
+                        <div class="col-3 mb-3">
+                            <button type="submit" class="btn btn-primary">Visualizza vetture</button>
+                        </div>
+                </form>
+                        <div class="col-3 mb-3  text-end">
+                            <a class="btn btn-primary" th:href="@{/auto/create}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-plus-fill" viewBox="0 0 16 16">
+                            <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01zM8.5 6v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 1 0"/>
+                            </svg>
+                            Aggiungi auto
+                            </a>
+                        </div>
+                    </div>
+                <div class="row mt-4">
+                    <div class="col-md-4 mb-4" th:each="auto : ${list}">
+                        <div class="card h-100">
+                            <img th:src="${auto.foto}" class="car-img" alt="Immagine auto">
+                                <div class="card-body">
+                                    <h5 class="card-title" th:text="${auto.brand} + ' ' + ${auto.model}"></h5>
+                                        <p class="card-text" th:text="${auto.description}"></p>
+                                        <p class="card-text"><strong>Colore:</strong> <span th:text="${auto.color}"></span></p>
+                                        <p class="card-text"><strong>Prezzo:</strong> €<span th:text="${auto.price}"></span></p>
+                                        <p class="card-text"><strong>Alimentazione:</strong> <span th:text="${auto.fuel}"></span></p>
+                                        <a th:href="@{/auto/show/{id}(id=${auto.id})}" class="btn btn-primary w-100">Dettagli</a>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+        </div>      
+    </div>
+<script th:src="@{/webjars/bootstrap/5.3.8/js/bootstrap.bundle.min.js}"></script>
+<script src="app.js"></script>
+</body>
+</html>

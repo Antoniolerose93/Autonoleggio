@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-AutoApplication<auto>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "auto.auto.AutoApplication",
+            "projectName": "auto",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

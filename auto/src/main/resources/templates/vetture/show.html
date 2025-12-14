@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.8/css/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <title>Noleggio Auto</title>
+</head>
+<body>
+    <nav th:replace="~{navbar :: navbar('Auto')}"></nav> 
+    <div class="container" th:object="${auto}" th:unless="${empty}">
+            <h1 th:text="*{brand}"></h1>
+            <h2 th:text="*{model}"></h2> 
+            <!-- | serve per concatenare -->
+            <hr/>
+            <div class="row">
+                <div class ="col-8">
+                    <dl>
+                        <dt>Brand</dt>
+                        <dd th:text="*{brand}"></dd>
+                        <dt>Nome</dt>
+                        <dd th:text="*{model}"></dd>
+                        <dt>Foto</dt>
+						<dd>
+                            <img th:src="${auto.foto}" class="img-fluid" alt="Responsive image">
+						</dd>                                     
+                    </dl>
+                </div>
+                <div class="col-4">
+                    <dl>
+                        <dt>Alimentazione</dt>
+                        <dd th:text="*{fuel}"></dd>
+                        <dt>Descrizione</dt>
+                        <dd th:text="*{description}"></dd>
+                        <dt>Prezzo</dt>
+                        <dd th:text ="*{price} +'€ mensili'"></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>           
+        <div class = "container" th:if="${empty}">
+            <h1>Vettura non trovata</h1>
+        </div> 
+    <script th:src="@{/webjars/bootstrap/5.3.8/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

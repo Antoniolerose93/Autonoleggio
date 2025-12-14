@@ -1,0 +1,5 @@
+.car-img {
+    width: 100%;        /* tutta la larghezza della card */
+    height: 200px;      /* altezza fissa per uniformare tutte le immagini */
+    object-fit: cover;  
+}
