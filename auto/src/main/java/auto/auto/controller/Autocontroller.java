@@ -2,6 +2,7 @@ package auto.auto.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import auto.auto.model.Auto;
 import auto.auto.repository.AutoRepository;
@@ -32,10 +34,9 @@ public class Autocontroller {
         Model model, 
         @RequestParam(name="brand", required=false)String brand,
         @RequestParam(name ="modello", required=false)String modello){
-
-          List<Auto> result;
-
-         if ((brand == null || brand.isBlank()) && (modello == null || modello.isBlank())) {
+    
+        List<Auto> result;
+        if ((brand == null || brand.isBlank()) && (modello == null || modello.isBlank())) {
             result = autorepository.findAll();
         } else if (modello != null && !modello.isBlank()) {
             result = autorepository.findBymodelContainingIgnoreCase(modello);
@@ -44,29 +45,31 @@ public class Autocontroller {
         } else {
             result = autorepository.findAll();
         }
-
         model.addAttribute("list", result);
-    
-        List<String> modelli;
-        if ("Alfa Romeo".equals(brand)) {
-            modelli = List.of("Giulia", "Stelvio", "Tonale", "Junior");
-        } else if ("BMW".equals(brand)) {
-            modelli = List.of("X1", "X3", "X5");
-        } else if ("Audi".equals(brand)) {
-            modelli = List.of("A3", "A4", "Q3");
-        } else if("Mercedes".equals(brand)){
-            modelli = List.of("Classe A","Classe E", "GLA");
-        } else if ("Cupra".equals(brand)){
-            modelli = List.of("Formentor", "Born", "Leon");
-        } else {
-            modelli = List.of(); // lista vuota se nessun brand selezionato
+
+        // Recupera tutti i brand distinti dal DB
+        List<String> brands = autorepository.findAll()
+                                    .stream() //è una sequenza di elementi su cui puoi eseguire operazioni funzionali senza modificare la collezione originale. Converte la lista in uno stream, in modo da poter applicare operazioni funzionali
+                                    .map(Auto::getBrand) //trasforma gli elementi, in questo caso prende ogni auto e ne estrae il brand
+                                    .distinct() //elimina i duplicati
+                                    .collect(Collectors.toList()); //converte lo stream in una lista
+        model.addAttribute("brands", brands);
+
+        // Recupera tutti i modelli distinti per il brand selezionato
+        List<String> modelliPerBrand = List.of();
+        if (brand != null && !brand.isBlank()) {
+            modelliPerBrand = autorepository.findBybrandIgnoreCase(brand)
+                                            .stream()
+                                            .map(Auto::getModel)
+                                            .distinct()
+                                            .collect(Collectors.toList());
         }
+        model.addAttribute("modelli", modelliPerBrand);
 
-    model.addAttribute("modelli", modelli);
-    model.addAttribute("marcaSelezionata", brand);
-    model.addAttribute("modelloSelezionato", modello);
+        model.addAttribute("marcaSelezionata", brand);
+        model.addAttribute("modelloSelezionato", modello);
 
-    return "vetture/index";    
+        return "vetture/index";    
     }
         
     
@@ -138,5 +141,14 @@ public class Autocontroller {
         return "redirect:/auto/";
     }
 
+    @GetMapping("/models")
+    @ResponseBody
+        public List<String> getModelsByBrand(@RequestParam String brand) {
+            return autorepository.findBybrandIgnoreCase(brand)
+                         .stream()
+                         .map(Auto::getModel)
+                         .distinct()
+                         .collect(Collectors.toList());
+}
 
 }

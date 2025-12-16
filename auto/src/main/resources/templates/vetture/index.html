@@ -19,17 +19,17 @@
                 <form th:action="@{/auto/}" method="get">
                     <div class="row">                
                         <div class="col-3 mb-3">            
-                            <select name="brand" class="form-select form-select-lg mb-3" aria-label="Seleziona il brand">
-                                <option selected>Scegli il brand</option>
-                                <option value="Alfa Romeo" th:selected="${brandselezionato =='Alfa Romeo'}">Alfa Romeo</option>
-                                <option value="BMW" th:selected="${brandselezionato =='BMW'}">BMW</option>
-                                <option value="Audi" th:selected="${brandselezionato =='Audi'}">Audi</option>
-                                <option value="Cupra" th:selected="${brandselezionato =='Cupra'}">Cupra</option>
-                                <option value="Mercedes" th:selected="${brandselezionato =='Mercedes'}">Mercedes</option>
+                            <select id= "brandSelect" name="brand" class="form-select form-select-lg mb-3" aria-label="Seleziona il brand">
+                                <option value="" selected>Scegli il brand</option>
+                                <option th:each="b : ${brands}" 
+                                th:value="${b}"
+                                th:text="${b}"
+                                th:selected="${marcaSelezionata == b}">
+                                </option>
                             </select>
                         </div>
                         <div class="col-3 mb-3">
-                            <select name="modello" class="form-select form-select-lg mb-3" aria-label="Seleziona modello">
+                            <select id="modelSelect" name="modello" class="form-select form-select-lg mb-3" aria-label="Seleziona modello">
                                 <option value="">Scegli il modello</option>
                                 <option th:each="m : ${modelli}" th:value="${m}" th:text="${m}" th:selected ="${modelloSelezionato ==m}"></option>
                             </select>
@@ -68,7 +68,7 @@
                                         </div>                                     
                                         <div class="d-flex justify-content-between">
                                             <a th:href="@{/auto/show/{id}(id=${auto.id})}" class="btn btn-primary">Dettagli</a>
-                                            <a th:href="@{/auto/edit/{id}(id=${auto.id})}" class="btn btn-warning">Modifica</a>
+                                            <a th:href="@{/auto/edit/{id}(id=${auto.id})}" class="btn btn-secondary">Modifica</a>
                                             <form th:action="@{/auto/delete/{id}(id=${auto.id})}"
                                             method="post" onsubmit="return confirm('Sei sicuro di voler cancellare questa auto?');">
                                                 <button type="submit" class="btn btn-danger">Elimina</button>
@@ -80,7 +80,7 @@
                 </div>
         </div>      
     </div>
-<script th:src="@{/webjars/bootstrap/5.3.8/js/bootstrap.bundle.min.js}"></script>
-<script src="app.js"></script>
+    <script th:src="@{/app.js}"></script>
+    <script th:src="@{/webjars/bootstrap/5.3.8/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
