@@ -9,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -44,8 +43,8 @@ public class Auto {
     @JoinColumn(name = "categories_id")
     private Categories category;
 
-    @OneToOne(mappedBy = "auto")
-    private Rental rent;
+    @OneToMany(mappedBy = "auto")
+    private List<Rental> rentals;
 
     @OneToMany(mappedBy="auto")
     private List<Offer> offers;
@@ -114,12 +113,12 @@ public class Auto {
         this.foto = foto;
     }
 
-    public Rental getRent() {
-        return rent;
+    public List<Rental> getRentals() {
+        return rentals;
     }
 
-    public void setRent(Rental rent) {
-        this.rent = rent;
+    public void setRentals(List<Rental> rentals) {
+        this.rentals = rentals;
     }
 
     public List<Offer> getOffers() {

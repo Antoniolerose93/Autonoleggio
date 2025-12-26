@@ -17,9 +17,10 @@ public class Offer {
 
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
+    
     private Integer id;
 
-     private String offerDescription;
+    private String offerDescription;
 
     private LocalDate offerStarDate;
 
@@ -68,7 +69,6 @@ public Auto getAuto() {
 public void setAuto(Auto auto) {
     this.auto = auto;
 }
-
    
 
 }

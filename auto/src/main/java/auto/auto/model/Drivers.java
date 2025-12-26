@@ -23,52 +23,52 @@ public class Drivers {
 
     private String surname;
 
-    @NotNull
-    @NotBlank(message ="patente obbligatoria")
+@NotNull
+@NotBlank(message ="patente obbligatoria")
     private String drivingLicense;
 
 @OneToMany
     private List<Rental> rent;
 
-public Integer getId() {
-    return id;
-}
+    public Integer getId() {
+        return id;
+    }
 
-public void setId(Integer id) {
-    this.id = id;
-}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-public String getName() {
-    return name;
-}
+    public String getName() {
+        return name;
+    }
 
-public void setName(String name) {
-    this.name = name;
-}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-public String getSurname() {
-    return surname;
-}
+    public String getSurname() {
+        return surname;
+    }
 
-public void setSurname(String surname) {
-    this.surname = surname;
-}
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
 
-public String getDrivingLicense() {
-    return drivingLicense;
-}
+    public String getDrivingLicense() {
+        return drivingLicense;
+    }
 
-public void setDrivingLicense(String drivingLicense) {
-    this.drivingLicense = drivingLicense;
-}
+    public void setDrivingLicense(String drivingLicense) {
+        this.drivingLicense = drivingLicense;
+    }
 
-public Rental getRent() {
-    return rent;
-}
+    public List<Rental> getRent() {
+        return rent;
+    }
 
-public void setRent(Rental rent) {
-    this.rent = rent;
-}
+    public void setRent(List<Rental> rent) {
+        this.rent = rent;
+    }   
 
 
 }

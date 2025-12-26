@@ -6,7 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
@@ -28,50 +29,61 @@ public class Rental {
 @NotNull
     private LocalDate rentEndDate;
 
-@OneToOne
+@ManyToOne
+@JoinColumn(name = "auto_id", nullable = false)
     private Auto auto;
 
-public Integer getId() {
-    return id;
-}
+@ManyToOne
+@JoinColumn(name = "drivers_id", nullable = false)
+    private Drivers driver;
 
-public void setId(Integer id) {
-    this.id = id;
-}
+    public Integer getId() {
+        return id;
+    }
 
-public String getRentDescription() {
-    return rentDescription;
-}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-public void setRentDescription(String rentDescription) {
-    this.rentDescription = rentDescription;
-}
+    public String getRentDescription() {
+        return rentDescription;
+    }
 
-public LocalDate getRentStartDate() {
-    return rentStartDate;
-}
+    public void setRentDescription(String rentDescription) {
+        this.rentDescription = rentDescription;
+    }
 
-public void setRentStartDate(LocalDate rentStartDate) {
-    this.rentStartDate = rentStartDate;
-}
+    public LocalDate getRentStartDate() {
+        return rentStartDate;
+    }
 
-public LocalDate getRentEndDate() {
-    return rentEndDate;
-}
+    public void setRentStartDate(LocalDate rentStartDate) {
+        this.rentStartDate = rentStartDate; 
+    }
 
-public void setRentEndDate(LocalDate rentEndDate) {
-    this.rentEndDate = rentEndDate;
-}
+    public LocalDate getRentEndDate() {
+        return rentEndDate; 
+    }
 
-public Auto getAuto() {
-    return auto;
-}
+    public void setRentEndDate(LocalDate rentEndDate) {
+        this.rentEndDate = rentEndDate;
+    }
 
-public void setAuto(Auto auto) {
-    this.auto = auto;
-}
+    public Auto getAuto() {
+        return auto;
+    }
 
+    public void setAuto(Auto auto) {
+        this.auto = auto;
+    }
 
+    public Drivers getDriver() {
+        return driver;
+    }
+
+    public void setDriver(Drivers driver) {
+        this.driver = driver;
+    }
 
 
 
