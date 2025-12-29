@@ -25,8 +25,7 @@ import jakarta.validation.Valid;
 
 public class Autocontroller {
 
-@Autowired
-
+    @Autowired
     private AutoRepository autorepository;
 
 @GetMapping("/")
@@ -112,23 +111,13 @@ public class Autocontroller {
 @PostMapping("/edit/{id}")
         public String update(@Valid @ModelAttribute("auto") Auto formAuto, BindingResult bindingResult, Model model) {    
         Auto oldAuto = autorepository.findById(formAuto.getId()).get();
-        // //inseriamo un blocco, non si può modificare il nome e la descrizione delle pizze
-        // if(!oldPizza.getNome().equals(formPizza.getNome())) { //verifichiamo se la vecchia pizza si chiama come la nuova. ! è il not che si mette all'inizio
-        //     bindingResult.addError(new ObjectError("name", "Cannot change the name"));
-        // }
-        // if(!oldPizza.getDescrizione().equals(formPizza.getDescrizione())) {
-        //     bindingResult.addError(new ObjectError("description", "Cannot change description"));
-        // }
+        
          if (bindingResult.hasErrors()) {
             return "/vetture/edit";
         }    
 
         autorepository.save(formAuto); 
-        //essendo questo repository uguale a quello sopra come fa a capire 
-        //se sta creando un elemento nuovo o se ne sta modificando uno esistente?
-        //come fa il repository a sapere se siamo in creazione o in modifica?
-        //Quando prende l'elemento che gli passiamo tramite l'id, capisce che c'è già un elemento con quell'id, ed è quello che deve aggiornare.
-        // nella creazione si crea un nuovo ID invece. Nella modifica dice quell'elemento con quell'id esiste già e quindi è quello che deve modificare.
+        
         
         return "redirect:/auto/";
 
