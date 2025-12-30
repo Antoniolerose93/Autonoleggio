@@ -45,6 +45,9 @@
                             </svg>
                             Aggiungi auto
                             </a>
+                              <a class="btn btn-warning" th:href="@{/rents/}">
+                            Auto noleggiate
+                            </a>
                         </div>
                     </div>
                 <div class="row mt-4">
@@ -58,7 +61,7 @@
                                                 <p class="card-text"><strong>Colore:</strong> <span th:text="${auto.color}"></span></p>
                                             </div>
                                             <div class="col">
-                                                <p class="card-text"><strong>Prezzo mensile:</strong> €<span th:text="${auto.price}"></span></p>
+                                                <p class="card-text"><strong>Prezzo al giorno:</strong> €<span th:text="${auto.price}"></span></p>
                                             </div>
                                         </div>
                                         <div class="row mb-2">
@@ -69,7 +72,7 @@
                                         <div class="d-flex justify-content-between">
                                             <a th:href="@{/auto/show/{id}(id=${auto.id})}" class="btn btn-primary">Dettagli</a>
                                             <a th:href="@{/auto/edit/{id}(id=${auto.id})}" class="btn btn-secondary">Modifica</a>
-                                            <a th:href="@{/rentals/create(autoId=${auto.id})}" class="btn btn-success">Noleggia</a>
+                                            <a th:href="@{/rents/create(autoId=${auto.id})}" class="btn btn-success">Noleggia</a>
                                             <form th:action="@{/auto/delete/{id}(id=${auto.id})}"
                                             method="post" onsubmit="return confirm('Sei sicuro di voler cancellare questa auto?');">
                                                 <button type="submit" class="btn btn-danger">Elimina</button>

@@ -2,6 +2,7 @@ package auto.auto.model;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,7 +34,7 @@ public class Rental {
 @JoinColumn(name = "auto_id", nullable = false)
     private Auto auto;
 
-@ManyToOne
+@ManyToOne(cascade = CascadeType.PERSIST)
 @JoinColumn(name = "drivers_id", nullable = false)
     private Drivers driver;
 
