@@ -72,7 +72,7 @@
                                         <div class="d-flex justify-content-between">
                                             <a th:href="@{/auto/show/{id}(id=${auto.id})}" class="btn btn-primary">Dettagli</a>
                                             <a th:href="@{/auto/edit/{id}(id=${auto.id})}" class="btn btn-secondary">Modifica</a>
-                                            <a th:href="@{/rents/create(autoId=${auto.id})}" class="btn btn-success">Noleggia</a>
+                                            <a th:href="@{/rents/quickrent(autoId=${auto.id})}" class="btn btn-success">Noleggia</a>
                                             <form th:action="@{/auto/delete/{id}(id=${auto.id})}"
                                             method="post" onsubmit="return confirm('Sei sicuro di voler cancellare questa auto?');">
                                                 <button type="submit" class="btn btn-danger">Elimina</button>

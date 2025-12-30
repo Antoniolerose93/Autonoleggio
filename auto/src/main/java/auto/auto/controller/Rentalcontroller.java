@@ -1,5 +1,6 @@
 package auto.auto.controller;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import auto.auto.model.Rental;
 import auto.auto.repository.AutoRepository;
@@ -46,9 +48,20 @@ public class Rentalcontroller {
 
         return "/rents/show";
     }
+
+    @GetMapping("/quickrent")
+    public String quickCreate(@RequestParam("autoId") Integer autoId, Model model) {
+        Rental rent = new Rental();
+        autoRepository.findById(autoId).ifPresent(rent::setAuto);
+
+        model.addAttribute("rent", rent);
+        model.addAttribute("auto", rent.getAuto()); // per mostrare i dettagli
+        return "/rents/quickrent"; // nome del template sopra
+}
+
     
     @GetMapping("/create")
-    public String createAuto(Model model) {
+    public String createRent(Model model) {
         model.addAttribute("rent", new Rental());
         model.addAttribute("vetture", autoRepository.findAll());
         
@@ -57,6 +70,17 @@ public class Rentalcontroller {
 
     @PostMapping("/create")
     public String createSubmit(@ModelAttribute Rental rent) {
+        
+
+        // Calcolo quanti giorni dura il noleggio (incluso il giorno finale)
+        long days = ChronoUnit.DAYS.between(rent.getRentStartDate(), rent.getRentEndDate()) + 1;
+
+        // Calcolo il prezzo totale del noleggio: prezzo giornaliero dell'auto * numero giorni
+        double totalPrice = rent.getAuto().getPrice() * days;
+
+        // Imposto il prezzo totale nel Rental
+        rent.setTotalPrice(totalPrice);
+
         rentalRepository.save(rent);
     
         return "redirect:/rents/"; // torna alla pagina dei noleggi
@@ -77,6 +101,14 @@ public class Rentalcontroller {
          if (bindingResult.hasErrors()) {
             return "/rents/edit";
         }    
+
+        long days = ChronoUnit.DAYS.between(formRent.getRentStartDate(), formRent.getRentEndDate()) + 1;
+
+        // Calcolo il prezzo totale
+        double totalPrice = formRent.getAuto().getPrice() * days;
+
+        // Imposto il prezzo totale
+        formRent.setTotalPrice(totalPrice);
 
         rentalRepository.save(formRent); 
         

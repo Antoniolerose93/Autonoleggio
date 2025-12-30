@@ -27,6 +27,7 @@
                         <th scope="col">Auto</th>
                         <th scope="col">Data inizio noleggio</th>
                         <th scope="col">Data fine noleggio</th>
+                        <th scope ="col">Prezzo del noleggio</th>
                         <th></th><!-- dettaglio -->
                         <th></th><!-- modifica -->
                         <th></th><!-- cancellazione -->
@@ -39,6 +40,7 @@
                             <td th:text="${rent.auto.brand} + ' ' + ${rent.auto.model}"></td>
                             <td th:text="${rent.rentStartDate}"></td>
                             <td th:text="${rent.rentEndDate}"></td>
+                            <td th:text="${rent.totalPrice} + ' €'"></td>
                             <td>  <!-- colonna per il dettaglio -->
                                 <a th:href="@{|/rents/show/${rent.id}|}" class="btn btn-primary" >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-car-front" viewBox="0 0 16 16">

@@ -30,6 +30,8 @@ public class Rental {
 @NotNull
     private LocalDate rentEndDate;
 
+    private Double totalPrice;
+
 @ManyToOne
 @JoinColumn(name = "auto_id", nullable = false)
     private Auto auto;
@@ -86,6 +88,12 @@ public class Rental {
         this.driver = driver;
     }
 
+    public Double getTotalPrice(){
+        return totalPrice;
+    }
 
+    public void setTotalPrice(Double totalPrice){
+        this.totalPrice = totalPrice;
+    }
 
 }
