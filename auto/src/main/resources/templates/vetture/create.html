@@ -37,6 +37,19 @@
                     </div>
 
                     <div class="mb-3">
+                        <label class="form-label">Categoria</label>
+                        <div th:each="cat : ${allCategories}">
+                            <input type="radio" th:field="*{category}" th:value="${cat.id}" th:id="'cat-' + ${cat.id}" class="form-check-input">
+                            <label th:for="'cat-' + ${cat.id}" th:text="${cat.categoryDescription}" class="form-check-label"></label>
+                        </div>
+                        <div th:if="${#fields.hasErrors('category')}" class="invalid-feedback d-block">
+                            <ul>
+                                <li th:each="err : ${#fields.errors('category')}" th:text="${err}"></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="price" class="form-label">Prezzo giornaliero</label>
                         <input type="number" th:field="*{price}" class="form-control" id="price" placeholder="Inserisci il prezzo">
                     </div>

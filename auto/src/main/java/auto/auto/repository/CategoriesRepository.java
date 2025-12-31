@@ -4,6 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import auto.auto.model.Categories;
 
+
 public interface CategoriesRepository extends JpaRepository<Categories, Integer> {
+
+    public Categories findBycategoryDescription(String categoryDescription);
 
 }

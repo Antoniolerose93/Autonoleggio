@@ -19,23 +19,37 @@
                     <input type="hidden" th:field="*{id}">
                     <div class="mb-3">
                         <label for="brand" class="form-label">Brand</label>
-                        <input type="text" th:field="*{brand}" class="form-control" id="brand" placeholder="Inserisci il brand" required>
+                        <input type="text" th:field="*{brand}" class="form-control" id="brand" placeholder="Inserisci il brand" readonly>
                     </div>
 
                     <div class="mb-3">
                         <label for="model" class="form-label">Modello</label>
-                        <input type="text" th:field="*{model}" class="form-control" id="model" placeholder="Inserisci il modello" required>
+                        <input type="text" th:field="*{model}" class="form-control" id="model" placeholder="Inserisci il modello" readonly>
                     </div>
 
                     <div class="mb-3">
                         <label for="color" class="form-label">Colore</label>
-                        <input type="text" th:field="*{color}" class="form-control" id="color" placeholder="Inserisci il colore">
+                        <input type="text" th:field="*{color}" class="form-control" id="color" placeholder="Inserisci il colore" readonly>
                     </div>
 
                     <div class="mb-3">
                         <label for="color" class="form-label">Descrizione</label>
                         <textarea class="form-control" th:field="*{description}" id="text-area"></textarea>
                     </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Categoria</label>
+                        <div th:each="cat : ${allCategories}">
+                            <input type="radio" th:field="*{category}" th:value="${cat.id}" th:id="'cat-' + ${cat.id}" class="form-check-input" checked disabled>
+                            <label th:for="'cat-' + ${cat.id}" th:text="${cat.categoryDescription}" class="form-check-label"></label>
+                        </div>
+                        <div th:if="${#fields.hasErrors('category')}" class="invalid-feedback d-block">
+                            <ul>
+                                <li th:each="err : ${#fields.errors('category')}" th:text="${err}"></li>
+                            </ul>
+                        </div>
+                    </div>
+
 
                     <div class="mb-3">
                         <label for="price" class="form-label">Prezzo</label>
@@ -44,7 +58,7 @@
 
                     <div class="mb-3">
                         <label for="fuel" class="form-label">Alimentazione</label>
-                        <input type="text" th:field="*{fuel}" class="form-control" id="fuel" placeholder="Inserisci l'alimentazione">
+                        <input type="text" th:field="*{fuel}" class="form-control" id="fuel" placeholder="Inserisci l'alimentazione" readonly>
                     </div>
 
                     <div class="mb-3">

@@ -68,6 +68,9 @@
                                             <div class="col">
                                                 <p class="card-text"><strong>Alimentazione:</strong> <span th:text="${auto.fuel}"></span></p>
                                             </div>
+                                            <div class="col">
+                                                <p class="card-text"><strong>Categoria:</strong> <span th:text="${auto.category.categoryDescription}"></span></p>
+                                            </div>
                                         </div>                                     
                                         <div class="d-flex justify-content-between">
                                             <a th:href="@{/auto/show/{id}(id=${auto.id})}" class="btn btn-primary">Dettagli</a>

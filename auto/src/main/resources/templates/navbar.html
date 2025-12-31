@@ -23,6 +23,11 @@
                         <a class="nav-link" aria-current="page" th:href="@{/rents/}"
                             th:classAppend="${current == 'Rents'} ? active : not-active">Noleggi</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" th:href="@{/categories/}"
+                            th:classAppend="${current == 'Categories'} ? active : not-active">Categorie di vetture</a>
+                    </li>
+
                 </ul>
             </div>
         </div>

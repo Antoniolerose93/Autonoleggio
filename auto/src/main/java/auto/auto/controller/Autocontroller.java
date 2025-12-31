@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import auto.auto.model.Auto;
 import auto.auto.repository.AutoRepository;
+import auto.auto.repository.CategoriesRepository;
 import jakarta.validation.Valid;
 
 @Controller
@@ -27,6 +28,9 @@ public class Autocontroller {
 
     @Autowired
     private AutoRepository autorepository;
+
+    @Autowired
+    private CategoriesRepository categoriesRepository;
 
 @GetMapping("/")
     public String index(
@@ -89,6 +93,7 @@ public class Autocontroller {
 @GetMapping("/create")
     public String createAuto(Model model) {
         model.addAttribute("auto", new Auto());
+        model.addAttribute("allCategories", categoriesRepository.findAll());
         
         return "vetture/create"; // template del form
     }
@@ -105,6 +110,7 @@ public class Autocontroller {
         Optional <Auto> optAuto = autorepository.findById(id);
         Auto auto = optAuto.get();
         model.addAttribute("auto", auto);
+        model.addAttribute("allCategories", categoriesRepository.findAll());
         return "/vetture/edit";
     }
 

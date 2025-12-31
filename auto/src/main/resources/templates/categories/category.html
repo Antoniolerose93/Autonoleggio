@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.8/css/bootstrap.min.css}" />
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <title>Categorie di vetture</title>
+</head>
+
+<body>
+    <nav th:replace="~{navbar :: navbar('Auto')}"></nav> 
+    <div class="container">
+        <h1>Categorie</h1>
+        <hr />
+        <div class="row py-3">
+            <div class="col-6">
+                <form id="categories-form" th:action="@{/categories/create}" method="post" th:object="${categoriesObj}">
+                    <ul th:if="${#fields.hasErrors('categoryDescription')}">
+                        <li th:each="err : ${#fields.errors('categoryDescription')}" th:text="${err}">Input non corretto</li>
+                    </ul>
+                    <div class="input-group mb-3">
+                        <input type="text" id="category" th:field="*{categoryDescription}" class="form-control">
+                        <button type="submit" class="btn btn-primary"> Aggiungi </button>
+                    </div>
+                </form>
+                <ul class="list-group" th:if="${categories.size() > 0}">
+                    <li class="list-group-item d-flex justify-content-between" th:each="item : ${categories}">
+                        <span th:text="|Auto di questa categoria ${item.auto.size()}|"></span>
+                        <span th:text="${item.categoryDescription}"></span>
+                        <form th:action="@{|/categories/delete/${item.id}|}" method="post">
+                            <button class="btn btn-danger" type="submit"
+                            onclick="return confirm('Sei sicuro di voler eliminare questa categoria?')">
+                            Elimina
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+                <div class="alert alert-primary" role="alert" th:unless="${categories.size() > 0}">
+                    Non ci sono categorie nel database
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- completato -->
+</body>
+</html>

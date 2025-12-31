@@ -18,7 +18,7 @@ public class Categories {
 @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String Categorydescription;
+    private String categoryDescription;
 
 @OneToMany(mappedBy= "category")
     private List <Auto> auto;
@@ -31,12 +31,12 @@ public void setId(Integer id) {
     this.id = id;
 }
 
-public String getCategorydescription() {
-    return Categorydescription;
+public String getCategoryDescription() {
+    return categoryDescription;
 }
 
-public void setCategorydescription(String categorydescription) {
-    Categorydescription = categorydescription;
+public void setCategoryDescription(String categoryDescription) {
+    this.categoryDescription = categoryDescription;
 }
 
 public List<Auto> getAuto() {

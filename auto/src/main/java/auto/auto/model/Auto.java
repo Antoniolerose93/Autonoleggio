@@ -2,6 +2,7 @@ package auto.auto.model;
 
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,8 +40,8 @@ public class Auto {
     @NotBlank(message ="url foto obbligatorio")
     private String foto;
 
-    @ManyToOne
-    @JoinColumn(name = "categories_id")
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "categories_id", nullable = false)
     private Categories category;
 
     @OneToMany(mappedBy = "auto")
@@ -128,4 +129,13 @@ public class Auto {
     public void setOffers(List<Offer> offers) {
         this.offers = offers;
     }
+
+    public Categories getCategory(){
+        return category;
+    }
+
+    public void setCategory(Categories category){
+        this.category = category;
+    }
+
 }
