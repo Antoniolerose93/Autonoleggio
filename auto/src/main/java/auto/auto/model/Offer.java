@@ -26,49 +26,68 @@ public class Offer {
 
     private LocalDate offerEnDate;
 
+    private String note;
+
+    private String descrizione;
+
 @ManyToOne
 @JoinColumn(name = "auto_id", nullable = false)
     private Auto auto;
     
     public Integer getId() {
-    return id;
-}
+        return id;
+    }
 
-public void setId(Integer id) {
-    this.id = id;
-}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-public String getOfferDescription() {
-    return offerDescription;
-}
+    public String getOfferDescription() {
+        return offerDescription;
+    }
 
-public void setOfferDescription(String offerDescription) {
-    this.offerDescription = offerDescription;
-}
+    public void setOfferDescription(String offerDescription) {
+        this.offerDescription = offerDescription;
+    }
 
-public LocalDate getOfferStarDate() {
-    return offerStarDate;
-}
+    public LocalDate getOfferStarDate() {
+        return offerStarDate;
+    }
 
-public void setOfferStarDate(LocalDate offerStarDate) {
-    this.offerStarDate = offerStarDate;
-}
+    public void setOfferStarDate(LocalDate offerStarDate) {
+        this.offerStarDate = offerStarDate;
+    }
 
-public LocalDate getOfferEnDate() {
-    return offerEnDate;
-}
+    public LocalDate getOfferEnDate() {
+        return offerEnDate;
+    }
 
-public void setOfferEnDate(LocalDate offerEnDate) {
-    this.offerEnDate = offerEnDate;
-}
+    public void setOfferEnDate(LocalDate offerEnDate) {
+        this.offerEnDate = offerEnDate;
+    }
 
-public Auto getAuto() {
-    return auto;
-}
+    public Auto getAuto() {
+        return auto;
+    }
 
-public void setAuto(Auto auto) {
-    this.auto = auto;
-}
-   
+    public void setAuto(Auto auto) {
+        this.auto = auto;
+    }
+
+    public String getNote(){
+        return note;
+    }
+
+    public void setNote(String note){
+        this.note = note;
+    }
+
+    public String getDescrizione(){
+        return descrizione;
+    }
+
+    public void setDescrizione(String descrizione){
+        this.descrizione = descrizione;
+    }
 
 }
