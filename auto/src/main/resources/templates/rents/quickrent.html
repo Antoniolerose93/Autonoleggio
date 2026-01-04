@@ -56,6 +56,10 @@
                             required>
                     </div>
 
+                    <p class="text-info" th:text="${availabilityMessage}"></p>
+                    <input type="hidden" th:field="*{auto.id}" th:value="${auto.id}" />
+
+
                     <div class="d-flex justify-content-between">
                         <a th:href="@{/rents/}" class="btn btn-secondary">Annulla</a>
                         <button type="submit" class="btn btn-primary">Salva noleggio</button>

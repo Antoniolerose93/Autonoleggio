@@ -1,5 +1,6 @@
 package auto.auto.controller;
 
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
@@ -56,7 +57,21 @@ public class Rentalcontroller {
 
         model.addAttribute("rent", rent);
         model.addAttribute("auto", rent.getAuto()); // per mostrare i dettagli
-        return "/rents/quickrent"; // nome del template sopra
+
+        Optional<Rental> lastRentalOpt = rentalRepository.findTopByAutoIdAndRentEndDateAfterOrderByRentEndDateDesc(
+            autoId, LocalDate.now()
+        );
+
+        if (lastRentalOpt.isPresent()) {
+        // Auto occupata e quindi disponibile dal giorno dopo la fine del noleggio
+        LocalDate availableFrom = lastRentalOpt.get().getRentEndDate().plusDays(1);
+        model.addAttribute("availabilityMessage", "Auto disponibile dal " + availableFrom);
+        } else {
+        // Auto libera
+        model.addAttribute("availabilityMessage", "Auto disponibile");
+    }
+
+        return "/rents/quickrent";
 }
 
     
@@ -65,12 +80,31 @@ public class Rentalcontroller {
         model.addAttribute("rent", new Rental());
         model.addAttribute("vetture", autoRepository.findAll());
         
+
+        
         return "/rents/create"; // template del form
     }
 
     @PostMapping("/create")
-    public String createSubmit(@ModelAttribute Rental rent) {
+    public String createSubmit(@ModelAttribute Rental rent, Model model) {
         
+         Optional<Rental> lastRentalOpt = rentalRepository
+        .findTopByAutoIdAndRentEndDateAfterOrderByRentEndDateDesc(
+            rent.getAuto().getId(), LocalDate.now()
+        );
+
+    // 2️⃣ Controllo disponibilità
+        if (lastRentalOpt.isPresent() &&
+            !rent.getRentStartDate().isAfter(lastRentalOpt.get().getRentEndDate())) {
+            // Auto non disponibile nel periodo scelto
+            LocalDate availableFrom = lastRentalOpt.get().getRentEndDate().plusDays(1);
+            model.addAttribute("error", "Auto non disponibile per le date selezionate");
+            model.addAttribute("auto", rent.getAuto());
+            model.addAttribute("availabilityMessage", "Auto disponibile dal " + availableFrom);
+        return "/rents/create"; // rimanda al form con messaggio di errore
+    }
+
+
 
         // Calcolo quanti giorni dura il noleggio (incluso il giorno finale)
         long days = ChronoUnit.DAYS.between(rent.getRentStartDate(), rent.getRentEndDate()) + 1;

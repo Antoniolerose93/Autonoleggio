@@ -40,6 +40,10 @@
                             </option>
                         </select>
                     </div>
+
+                    <p class="text-info" th:text="${availabilityMessage}"></p>
+                    <input type="hidden" th:field="*{auto.id}" th:value="${auto.id}" />
+
                     <div class="mb-3">
                         <label class="form-label">Data inizio noleggio</label>
                         <input type="date"
