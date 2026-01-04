@@ -33,47 +33,51 @@ public class Autocontroller {
     private CategoriesRepository categoriesRepository;
 
 @GetMapping("/")
-    public String index(
+public String index(
         Model model, 
-        @RequestParam(name="brand", required=false)String brand,
-        @RequestParam(name ="modello", required=false)String modello){
-    
-        List<Auto> result;
-        if ((brand == null || brand.isBlank()) && (modello == null || modello.isBlank())) {
-            result = autorepository.findAll();
-        } else if (modello != null && !modello.isBlank()) {
-            result = autorepository.findBymodelContainingIgnoreCase(modello);
-        } else if (brand != null && !brand.isBlank()) {
-            result = autorepository.findBybrandIgnoreCase(brand);
-        } else {
-            result = autorepository.findAll();
-        }
-        model.addAttribute("list", result);
+        @RequestParam(name="brand", required=false) String brand,
+        @RequestParam(name="modello", required=false) String modello,
+        @RequestParam(name="fuel", required=false) String fuel) {
 
-        // Recupera tutti i brand distinti dal DB
-        List<String> brands = autorepository.findAll()
-                                    .stream() //è una sequenza di elementi su cui puoi eseguire operazioni funzionali senza modificare la collezione originale. Converte la lista in uno stream, in modo da poter applicare operazioni funzionali
-                                    .map(Auto::getBrand) //trasforma gli elementi, in questo caso prende ogni auto e ne estrae il brand
-                                    .distinct() //elimina i duplicati
-                                    .collect(Collectors.toList()); //converte lo stream in una lista
-        model.addAttribute("brands", brands);
+    List<Auto> result;
 
-        // Recupera tutti i modelli distinti per il brand selezionato
-        List<String> modelliPerBrand = List.of();
-        if (brand != null && !brand.isBlank()) {
-            modelliPerBrand = autorepository.findBybrandIgnoreCase(brand)
-                                            .stream()
-                                            .map(Auto::getModel)
-                                            .distinct()
-                                            .collect(Collectors.toList());
-        }
-        model.addAttribute("modelli", modelliPerBrand);
-
-        model.addAttribute("marcaSelezionata", brand);
-        model.addAttribute("modelloSelezionato", modello);
-
-        return "vetture/index";    
+    if ((brand == null || brand.isBlank()) && (modello == null || modello.isBlank())) {
+        result = autorepository.findAll();
+    } else if (modello != null && !modello.isBlank()) {
+        result = autorepository.findBymodelContainingIgnoreCase(modello);
+    } else if (brand != null && !brand.isBlank()) {
+        result = autorepository.findBybrandIgnoreCase(brand);
+    } else {
+        result = autorepository.findAll();
     }
+    model.addAttribute("list", result);
+
+    // Tutti i brand distinti
+    List<String> brands = autorepository.findAll()
+                                        .stream()
+                                        .map(Auto::getBrand)
+                                        .distinct()
+                                        .collect(Collectors.toList());
+    model.addAttribute("brands", brands);
+
+    // Tutti i modelli distinti per il brand selezionato
+    List<String> modelliPerBrand = List.of();
+    if (brand != null && !brand.isBlank()) {
+        modelliPerBrand = autorepository.findBybrandIgnoreCase(brand)
+                                        .stream()
+                                        .map(Auto::getModel)
+                                        .distinct()
+                                        .collect(Collectors.toList());
+    }
+    model.addAttribute("modelli", modelliPerBrand);
+
+
+    model.addAttribute("marcaSelezionata", brand);
+    model.addAttribute("modelloSelezionato", modello);
+
+    return "vetture/index";    
+}
+
         
     
 
