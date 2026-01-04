@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     const brandSelect = document.getElementById("brandSelect");
     const modelSelect = document.getElementById("modelSelect");
-
+    // const categorySelect = document.getElementById("categorySelect")
     //Listiner che scatta quando cambia il valore selezionato
     brandSelect.addEventListener("change", () => {
         const brand = brandSelect.value;

@@ -19,17 +19,17 @@
                     <input type="hidden" th:field="*{id}">
                     <div class="mb-3">
                         <label for="brand" class="form-label">Brand</label>
-                        <input type="text" th:field="*{brand}" class="form-control" id="brand" placeholder="Inserisci il brand" readonly>
+                        <input type="text" th:field="*{brand}" class="form-control" id="brand" placeholder="Inserisci il brand" th:readonly= "${brandBloccato}">
                     </div>
 
                     <div class="mb-3">
                         <label for="model" class="form-label">Modello</label>
-                        <input type="text" th:field="*{model}" class="form-control" id="model" placeholder="Inserisci il modello" readonly>
+                        <input type="text" th:field="*{model}" class="form-control" id="model" placeholder="Inserisci il modello" th:readonly= "${modelloBloccato}">
                     </div>
 
                     <div class="mb-3">
                         <label for="color" class="form-label">Colore</label>
-                        <input type="text" th:field="*{color}" class="form-control" id="color" placeholder="Inserisci il colore" readonly>
+                        <input type="text" th:field="*{color}" class="form-control" id="color" placeholder="Inserisci il colore" th:readonly="${coloreBloccato}">
                     </div>
 
                     <div class="mb-3">
@@ -40,7 +40,7 @@
                     <div class="mb-3">
                         <label class="form-label">Categoria</label>
                         <div th:each="cat : ${allCategories}">
-                            <input type="radio" th:field="*{category}" th:value="${cat.id}" th:id="'cat-' + ${cat.id}" class="form-check-input" checked disabled>
+                            <input type="radio" th:field="*{category}" th:disabled ="${categoriaBloccata}" th:value="${cat.id}" th:id="'cat-' + ${cat.id}" class="form-check-input">
                             <label th:for="'cat-' + ${cat.id}" th:text="${cat.categoryDescription}" class="form-check-label"></label>
                         </div>
                         <div th:if="${#fields.hasErrors('category')}" class="invalid-feedback d-block">

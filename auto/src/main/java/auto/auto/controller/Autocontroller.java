@@ -111,6 +111,10 @@ public class Autocontroller {
         Auto auto = optAuto.get();
         model.addAttribute("auto", auto);
         model.addAttribute("allCategories", categoriesRepository.findAll());
+        model.addAttribute("categoriaBloccata", true);
+        model.addAttribute("coloreBloccato", true);
+        model.addAttribute("modelloBloccato",true);
+        model.addAttribute("brandBloccato", true);
         return "/vetture/edit";
     }
 
