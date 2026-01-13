@@ -1,15 +1,61 @@
 <!DOCTYPE html>
-<html lang="it">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dettaglio Noleggio</title>
     <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.8/css/bootstrap.min.css}" />
-    <link rel="stylesheet" th:href="@{/app.css}">
-    <title>Dettaglio del noleggio</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
 </head>
 <body>
+    <!-- Navbar -->
     <nav th:replace="~{navbar :: navbar('Auto')}"></nav> 
-    
+
+    <main>
+        <div class="container mt-4" th:if="${rental != null}">
+            <h1>Dettaglio Noleggio #<span th:text="${rental.id}"></span></h1>
+            <hr/>
+
+            <div class="row mb-3">
+                <div class="col-4"><strong>Autista</strong></div>
+                <div class="col-8" th:text="${rental.driver.name} + ' ' + ${rental.driver.surname}"></div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-4"><strong>Auto</strong></div>
+                <div class="col-8" th:text="${rental.auto.brand} + ' ' + ${rental.auto.model}"></div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-4"><strong>Data inizio noleggio</strong></div>
+                <div class="col-8" th:text="${rental.rentStartDate}"></div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-4"><strong>Data fine noleggio</strong></div>
+                <div class="col-8" th:text="${rental.rentEndDate}"></div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-4"><strong>Prezzo totale</strong></div>
+                <div class="col-8" th:text="${T(java.lang.String).format('%.2f €', rental.totalPrice)}"></div>
+            </div>
+            <div class = "row mb-3">
+                <div class ="col-5">
+                    <img th:src="${rental.auto.foto}" class="img-fluid" alt="Responsive image">
+                </div>
+            </div>
+        
+        </div>
+    </main>
+
+    <!-- Messaggio se il noleggio non esiste -->
+    <div class="container mt-4" th:if="${rental == null}">
+        <div class="alert alert-warning">
+            Noleggio non trovato
+        </div>
+    </div>
+
     <script th:src="@{/webjars/bootstrap/5.3.8/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import auto.auto.model.Rental;
 import auto.auto.repository.AutoRepository;
 import auto.auto.repository.RentalRepository;
+import auto.auto.service.RentalService;
 import jakarta.validation.Valid;
 
 
@@ -30,6 +31,9 @@ public class Rentalcontroller {
 
     @Autowired
     private AutoRepository autoRepository;
+
+    @Autowired
+    private RentalService rentalService;
 
     @GetMapping("/")
     public String rentals(Model model) {
@@ -69,10 +73,10 @@ public class Rentalcontroller {
         } else {
         // Auto libera
         model.addAttribute("availabilityMessage", "Auto disponibile");
-    }
+        }
 
         return "/rents/quickrent";
-}
+    }
 
     
     @GetMapping("/create")
@@ -80,20 +84,29 @@ public class Rentalcontroller {
         model.addAttribute("rent", new Rental());
         model.addAttribute("vetture", autoRepository.findAll());
         
-
         
         return "/rents/create"; // template del form
     }
 
     @PostMapping("/create")
     public String createSubmit(@ModelAttribute Rental rent, Model model) {
-        
-         Optional<Rental> lastRentalOpt = rentalRepository
-        .findTopByAutoIdAndRentEndDateAfterOrderByRentEndDateDesc(
-            rent.getAuto().getId(), LocalDate.now()
-        );
+        //recupero l'oggetto Auto dal repository
+        autoRepository.findById(rent.getAuto().getId()).ifPresent(rent::setAuto);
 
-    // 2️⃣ Controllo disponibilità
+         Optional<Rental> lastRentalOpt = rentalRepository
+            .findTopByAutoIdAndRentEndDateAfterOrderByRentEndDateDesc(
+                rent.getAuto().getId(), LocalDate.now()
+            );
+
+        LocalDate today = LocalDate.now();
+        if(rent.getRentStartDate().isBefore(today) || rent.getRentEndDate().isBefore(today)){
+            model.addAttribute("error","Le date di inizio e fine del noleggio non possono essere precedenti ad oggi");
+            model.addAttribute("auto", rent.getAuto());
+            model.addAttribute("rent", rent);
+            model.addAttribute("vetture", autoRepository.findAll());
+            return"/rents/";
+        }
+        //Controllo disponibilità
         if (lastRentalOpt.isPresent() &&
             !rent.getRentStartDate().isAfter(lastRentalOpt.get().getRentEndDate())) {
             // Auto non disponibile nel periodo scelto
@@ -101,20 +114,12 @@ public class Rentalcontroller {
             model.addAttribute("error", "Auto non disponibile per le date selezionate");
             model.addAttribute("auto", rent.getAuto());
             model.addAttribute("availabilityMessage", "Auto disponibile dal " + availableFrom);
-        return "/rents/create"; // rimanda al form con messaggio di errore
-    }
+                return "/rents/create"; // rimanda al form con messaggio di errore
+        }
 
 
-
-        // Calcolo quanti giorni dura il noleggio (incluso il giorno finale)
-        long days = ChronoUnit.DAYS.between(rent.getRentStartDate(), rent.getRentEndDate()) + 1;
-
-        // Calcolo il prezzo totale del noleggio: prezzo giornaliero dell'auto * numero giorni
-        double totalPrice = rent.getAuto().getPrice() * days;
-
-        // Imposto il prezzo totale nel Rental
+        double totalPrice = rentalService.calcolaPrezzoTotale(rent);
         rent.setTotalPrice(totalPrice);
-
         rentalRepository.save(rent);
     
         return "redirect:/rents/"; // torna alla pagina dei noleggi

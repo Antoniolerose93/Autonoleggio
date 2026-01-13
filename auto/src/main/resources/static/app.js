@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
             // Fetch dei modelli
             fetch(`/auto/models?brand=${encodeURIComponent(brand)}`)
                 .then(response => response.json())
-                .then(data => {
+                .then(data => { //sia data che model sono convenzioni, avrei potuto chiamarli come preferivo
                     data.forEach(model => {
                         const option = document.createElement("option");
                         option.value = model;

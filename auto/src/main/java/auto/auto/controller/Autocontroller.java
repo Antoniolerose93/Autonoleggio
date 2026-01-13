@@ -33,7 +33,7 @@ public class Autocontroller {
     private CategoriesRepository categoriesRepository;
 
 @GetMapping("/")
-public String index(
+    public String index(
         Model model, 
         @RequestParam(name="brand", required=false) String brand,
         @RequestParam(name="modello", required=false) String modello,
@@ -62,21 +62,21 @@ public String index(
 
     // Tutti i modelli distinti per il brand selezionato
     List<String> modelliPerBrand = List.of();
-    if (brand != null && !brand.isBlank()) {
-        modelliPerBrand = autorepository.findBybrandIgnoreCase(brand)
+        if (brand != null && !brand.isBlank()) {
+            modelliPerBrand = autorepository.findBybrandIgnoreCase(brand)
                                         .stream()
                                         .map(Auto::getModel)
                                         .distinct()
                                         .collect(Collectors.toList());
-    }
-    model.addAttribute("modelli", modelliPerBrand);
+        }
+        model.addAttribute("modelli", modelliPerBrand);
 
 
-    model.addAttribute("marcaSelezionata", brand);
-    model.addAttribute("modelloSelezionato", modello);
+        model.addAttribute("marcaSelezionata", brand);
+        model.addAttribute("modelloSelezionato", modello);
 
     return "vetture/index";    
-}
+    }
 
         
     
