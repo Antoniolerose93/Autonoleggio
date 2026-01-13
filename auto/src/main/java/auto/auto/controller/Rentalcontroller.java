@@ -1,7 +1,6 @@
 package auto.auto.controller;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,26 +55,19 @@ public class Rentalcontroller {
 
     @GetMapping("/quickrent")
     public String quickCreate(@RequestParam("autoId") Integer autoId, Model model) {
-        Rental rent = new Rental();
-        autoRepository.findById(autoId).ifPresent(rent::setAuto);
+    Rental rent = new Rental();
+    autoRepository.findById(autoId).ifPresent(rent::setAuto);
 
-        model.addAttribute("rent", rent);
-        model.addAttribute("auto", rent.getAuto()); // per mostrare i dettagli
+    model.addAttribute("rent", rent);
+    model.addAttribute("auto", rent.getAuto()); // per mostrare i dettagli
 
-        Optional<Rental> lastRentalOpt = rentalRepository.findTopByAutoIdAndRentEndDateAfterOrderByRentEndDateDesc(
-            autoId, LocalDate.now()
-        );
+    // Messaggio di disponibilità completo
+    RentalService.DisponibilitaResidua disponibilita = rentalService.prossimaDataDisponibile(autoId, LocalDate.now());
+    model.addAttribute("messaggioDisponibilita",
+        "Auto disponibile fino al: " + disponibilita.getDisponibileFino() +
+        ". uccessivamente disponibile nuovamente dal: " + disponibilita.getDisponibileDa());
 
-        if (lastRentalOpt.isPresent()) {
-        // Auto occupata e quindi disponibile dal giorno dopo la fine del noleggio
-        LocalDate availableFrom = lastRentalOpt.get().getRentEndDate().plusDays(1);
-        model.addAttribute("availabilityMessage", "Auto disponibile dal " + availableFrom);
-        } else {
-        // Auto libera
-        model.addAttribute("availabilityMessage", "Auto disponibile");
-        }
-
-        return "/rents/quickrent";
+    return "/rents/quickrent";
     }
 
     
@@ -85,76 +77,56 @@ public class Rentalcontroller {
         model.addAttribute("vetture", autoRepository.findAll());
         
         
-        return "/rents/create"; // template del form
+        return "rents/create"; // template del form
     }
 
     @PostMapping("/create")
     public String createSubmit(@ModelAttribute Rental rent, Model model) {
-        //recupero l'oggetto Auto dal repository
+    // Recupero l'auto dal repository
         autoRepository.findById(rent.getAuto().getId()).ifPresent(rent::setAuto);
 
-         Optional<Rental> lastRentalOpt = rentalRepository
-            .findTopByAutoIdAndRentEndDateAfterOrderByRentEndDateDesc(
-                rent.getAuto().getId(), LocalDate.now()
-            );
-
-        LocalDate today = LocalDate.now();
-        if(rent.getRentStartDate().isBefore(today) || rent.getRentEndDate().isBefore(today)){
-            model.addAttribute("error","Le date di inizio e fine del noleggio non possono essere precedenti ad oggi");
-            model.addAttribute("auto", rent.getAuto());
-            model.addAttribute("rent", rent);
-            model.addAttribute("vetture", autoRepository.findAll());
-            return"/rents/";
-        }
-        //Controllo disponibilità
-        if (lastRentalOpt.isPresent() &&
-            !rent.getRentStartDate().isAfter(lastRentalOpt.get().getRentEndDate())) {
-            // Auto non disponibile nel periodo scelto
-            LocalDate availableFrom = lastRentalOpt.get().getRentEndDate().plusDays(1);
-            model.addAttribute("error", "Auto non disponibile per le date selezionate");
-            model.addAttribute("auto", rent.getAuto());
-            model.addAttribute("availabilityMessage", "Auto disponibile dal " + availableFrom);
-                return "/rents/create"; // rimanda al form con messaggio di errore
-        }
-
-
-        double totalPrice = rentalService.calcolaPrezzoTotale(rent);
-        rent.setTotalPrice(totalPrice);
-        rentalRepository.save(rent);
-    
-        return "redirect:/rents/"; // torna alla pagina dei noleggi
-    }
-
-    @GetMapping("/edit/{id}")
-        public String edit(@PathVariable ("id") Integer id, Model model) {
-        Optional<Rental> optionalRental = rentalRepository.findById(id);
-        Rental rent = optionalRental.get();
+    LocalDate today = LocalDate.now();
+    if (rent.getRentStartDate().isBefore(today) || rent.getRentEndDate().isBefore(today)) {
+        model.addAttribute("error", "Le date di inizio e fine del noleggio non possono essere nel passato");
+        model.addAttribute("auto", rent.getAuto());
         model.addAttribute("rent", rent);
-        return "/rents/edit";
+        model.addAttribute("vetture", autoRepository.findAll());
+
+        // Calcolo il messaggio di disponibilità anche qui
+        RentalService.DisponibilitaResidua disponibilita = rentalService.prossimaDataDisponibile(rent.getAuto().getId(), today);
+        model.addAttribute("messaggioDisponibilita",
+            "Auto disponibile fino al: " + disponibilita.getDisponibileFino() +
+            " e disponibile nuovamente dal: " + disponibilita.getDisponibileDa());
+
+        return "rents/create";
     }
 
-    @PostMapping("/edit/{id}")
-        public String update(@Valid @ModelAttribute("rent") Rental formRent, BindingResult bindingResult, Model model) {    
-        Rental oldRent = rentalRepository.findById(formRent.getId()).get();
-        
-         if (bindingResult.hasErrors()) {
-            return "/rents/edit";
-        }    
+    // Controllo disponibilità tramite il service
+    if (!rentalService.disponibilita(rent)) {
+        model.addAttribute("error", "Auto non disponibile per le date selezionate");
+    }
 
-        long days = ChronoUnit.DAYS.between(formRent.getRentStartDate(), formRent.getRentEndDate()) + 1;
+    // Calcolo sempre il messaggio di disponibilità
+    RentalService.DisponibilitaResidua disponibilita = rentalService.prossimaDataDisponibile(rent.getAuto().getId(), today);
+    model.addAttribute("messaggioDisponibilita",
+        "Auto disponibile fino al: " + disponibilita.getDisponibileFino() +
+        " e disponibile nuovamente dal: " + disponibilita.getDisponibileDa());
 
-        // Calcolo il prezzo totale
-        double totalPrice = formRent.getAuto().getPrice() * days;
+    // Se l'auto non è disponibile, rimando al form
+    if (!rentalService.disponibilita(rent)) {
+        model.addAttribute("auto", rent.getAuto());
+        model.addAttribute("rent", rent);
+        model.addAttribute("vetture", autoRepository.findAll());
+        return "rents/create";
+    }
 
-        // Imposto il prezzo totale
-        formRent.setTotalPrice(totalPrice);
+    // Salvataggio noleggio
+    rent.setTotalPrice(rentalService.calcolaPrezzoTotale(rent));
+    rentalRepository.save(rent);
 
-        rentalRepository.save(formRent); 
-        
-        
         return "redirect:/rents/";
-
     }
+
 
     @PostMapping("/delete/{id}")
         public String delete (@PathVariable("id") Integer id) {

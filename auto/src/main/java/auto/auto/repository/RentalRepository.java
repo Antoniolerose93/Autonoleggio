@@ -17,4 +17,10 @@ public interface RentalRepository extends JpaRepository<Rental, Integer> {
     Optional<Rental> findTopByAutoIdAndRentEndDateAfterOrderByRentEndDateDesc(
         Integer autoId, LocalDate currentDate);
 
+    List<Rental> findByAutoIdAndRentEndDateGreaterThanEqualAndRentStartDateLessThanEqual(
+    Integer autoId, LocalDate startDate, LocalDate endDate);
+
+    List<Rental> findByAutoIdAndRentStartDateGreaterThanEqualOrderByRentStartDateAsc(
+    Integer autoId, LocalDate startDate);
+
 }
