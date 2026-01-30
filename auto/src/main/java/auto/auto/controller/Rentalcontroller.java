@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +17,6 @@ import auto.auto.model.Rental;
 import auto.auto.repository.AutoRepository;
 import auto.auto.repository.RentalRepository;
 import auto.auto.service.RentalService;
-import jakarta.validation.Valid;
 
 
 @Controller
@@ -92,7 +90,7 @@ public class Rentalcontroller {
         model.addAttribute("rent", rent);
         model.addAttribute("vetture", autoRepository.findAll());
 
-        // Calcolo il messaggio di disponibilità anche qui
+        // Prevedo il messaggio di disponibilità anche qui
         RentalService.DisponibilitaResidua disponibilita = rentalService.prossimaDataDisponibile(rent.getAuto().getId(), today);
         model.addAttribute("messaggioDisponibilita",
             "Auto disponibile fino al: " + disponibilita.getDisponibileFino() +

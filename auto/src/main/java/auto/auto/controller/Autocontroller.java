@@ -112,7 +112,12 @@ public class Autocontroller {
 @GetMapping("/edit/{id}")
         public String edit(@PathVariable ("id") Integer id, Model model) {
         Optional <Auto> optAuto = autorepository.findById(id);
+        if(optAuto.isEmpty()){
+            return "redirect:/auto/";
+        }
+        
         Auto auto = optAuto.get();
+        
         model.addAttribute("auto", auto);
         model.addAttribute("allCategories", categoriesRepository.findAll());
         model.addAttribute("categoriaBloccata", true);
@@ -123,22 +128,38 @@ public class Autocontroller {
     }
 
 @PostMapping("/edit/{id}")
-        public String update(@Valid @ModelAttribute("auto") Auto formAuto, BindingResult bindingResult, Model model) {    
-        Auto oldAuto = autorepository.findById(formAuto.getId()).get();
-        
-         if (bindingResult.hasErrors()) {
-            return "/vetture/edit";
-        }    
+    public String update(
+        @PathVariable Integer id,
+        @Valid @ModelAttribute("auto") Auto formAuto,
+        BindingResult bindingResult,
+        Model model) {
 
-        autorepository.save(formAuto); 
-        
-        
-        return "redirect:/auto/";
-
+    if (bindingResult.hasErrors()) {
+        return "/vetture/edit";
     }
+
+    Optional<Auto> optAuto = autorepository.findById(id);
+
+    if (optAuto.isEmpty()) {
+        return "redirect:/auto/";
+    }
+
+    Auto oldAuto = optAuto.get();
+
+    oldAuto.setPrice(formAuto.getPrice());
+    oldAuto.setFoto(formAuto.getFoto());
+
+    autorepository.save(oldAuto);
+
+    return "redirect:/auto/";
+}
 
     @PostMapping("/delete/{id}")
         public String delete (@PathVariable("id") Integer id) {
+        Optional<Auto> optAuto = autorepository.findById(id);
+        if(optAuto.isEmpty()){
+            return "redirect:/auto/";
+        }
         Auto auto = autorepository.findById(id).get();
         autorepository.deleteById(id);
         return "redirect:/auto/";
