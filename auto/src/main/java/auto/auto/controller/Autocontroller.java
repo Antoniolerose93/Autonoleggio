@@ -160,7 +160,6 @@ public class Autocontroller {
         if(optAuto.isEmpty()){
             return "redirect:/auto/";
         }
-        Auto auto = autorepository.findById(id).get();
         autorepository.deleteById(id);
         return "redirect:/auto/";
     }
