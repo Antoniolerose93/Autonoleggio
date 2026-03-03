@@ -1,4 +1,4 @@
-# 🚗 Noleggio auto (Spring Boot)
+# 🚗 Noleggio auto
 
 Un'applicazione per la gestione di un auto noleggio, sviluppata Spring Boot. 
 
