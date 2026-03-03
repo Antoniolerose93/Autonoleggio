@@ -93,11 +93,18 @@ public class Rentalcontroller {
         }
         
     @GetMapping("/create")
-    public String createRent(Model model) {
-        model.addAttribute("rent", new Rental());
-        model.addAttribute("vetture", autoService.findAll());
-                
-        return "rents/create"; // template del form
+        public String createRent(@RequestParam(value = "autoId", required = false) Integer autoId, Model model) {
+        Rental rent = new Rental();
+    
+        if (autoId != null) {
+            Auto selectedAuto = autoService.findById(autoId);
+            rent.setAuto(selectedAuto);
+            model.addAttribute("availabilityMessage", rentalService.getAvailabilityMessage(autoId, LocalDate.now()));
+            }
+
+            model.addAttribute("rent", rent);
+            model.addAttribute("vetture", autoService.findAll());
+        return "rents/create"; 
     }
 
     @PostMapping("/create")
@@ -106,9 +113,13 @@ public class Rentalcontroller {
         BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
     
         if(bindingResult.hasErrors()){
-            model.addAttribute("vetture", autoService.findAll());
-            return "rents/create";
+        model.addAttribute("vetture", autoService.findAll());
+        
+        if (rent.getAuto() != null && rent.getAuto().getId() != null) {
+            model.addAttribute("availabilityMessage", rentalService.getAvailabilityMessage(rent.getAuto().getId(), LocalDate.now()));
         }
+        return "rents/create";
+    }
 
         try {
             rentalService.saveRent(rent);
@@ -116,8 +127,11 @@ public class Rentalcontroller {
             return "redirect:/auto/";
 
         } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/auto/";
+            model.addAttribute("availabilityMessage", e.getMessage());
+            model.addAttribute("vetture", autoService.findAll());
+    
+            model.addAttribute("availabilityMessage", rentalService.getAvailabilityMessage(rent.getAuto().getId(), LocalDate.now()));
+            return "rents/create"; 
         }
        
     }
