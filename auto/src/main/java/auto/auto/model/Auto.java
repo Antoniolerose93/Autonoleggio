@@ -45,6 +45,7 @@ public class Auto {
     private String fuel;
 
     @NotBlank(message ="url foto obbligatorio")
+    @Column(columnDefinition = "TEXT")
     private String foto;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
