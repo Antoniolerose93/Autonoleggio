@@ -1,9 +1,5 @@
 package auto.auto.controller;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,11 +10,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import auto.auto.model.Auto;
-import auto.auto.repository.AutoRepository;
-import auto.auto.repository.CategoriesRepository;
+import auto.auto.service.AutoService;
+import auto.auto.service.CategoriesService;
 import jakarta.validation.Valid;
 
 @Controller
@@ -27,151 +23,144 @@ import jakarta.validation.Valid;
 public class Autocontroller {
 
     @Autowired
-    private AutoRepository autorepository;
+    private AutoService autoService;
 
     @Autowired
-    private CategoriesRepository categoriesRepository;
+    private CategoriesService categoriesService;
 
-@GetMapping("/")
-    public String index(
-        Model model, 
-        @RequestParam(name="brand", required=false) String brand,
-        @RequestParam(name="modello", required=false) String modello,
-        @RequestParam(name="fuel", required=false) String fuel) {
+    @GetMapping("/")
+        public String index(
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) String modelName,
+            @RequestParam(required = false) String fuel,
+            Model model) {
 
-    List<Auto> result;
+            model.addAttribute("brands", autoService.findAllBrands());
+            model.addAttribute("models", autoService.findModelsByBrand(brand));
+            model.addAttribute("fuels", autoService.findFuelsByBrandAndModel(brand, modelName)); 
 
-    if ((brand == null || brand.isBlank()) && (modello == null || modello.isBlank())) {
-        result = autorepository.findAll();
-    } else if (modello != null && !modello.isBlank()) {
-        result = autorepository.findBymodelContainingIgnoreCase(modello);
-    } else if (brand != null && !brand.isBlank()) {
-        result = autorepository.findBybrandIgnoreCase(brand);
-    } else {
-        result = autorepository.findAll();
-    }
-    model.addAttribute("list", result);
 
-    // Tutti i brand distinti
-    List<String> brands = autorepository.findAll()
-                                        .stream()
-                                        .map(Auto::getBrand)
-                                        .distinct()
-                                        .collect(Collectors.toList());
-    model.addAttribute("brands", brands);
+            model.addAttribute("auto", autoService.searchAuto(brand, modelName, fuel));
+            
+            model.addAttribute("selectedBrand", brand);
+            model.addAttribute("selectedModel", modelName);
+            model.addAttribute("selectedFuel", fuel);
 
-    // Tutti i modelli distinti per il brand selezionato
-    List<String> modelliPerBrand = List.of();
-        if (brand != null && !brand.isBlank()) {
-            modelliPerBrand = autorepository.findBybrandIgnoreCase(brand)
-                                        .stream()
-                                        .map(Auto::getModel)
-                                        .distinct()
-                                        .collect(Collectors.toList());
+        return "vetture/index";    
         }
-        model.addAttribute("modelli", modelliPerBrand);
-
-
-        model.addAttribute("marcaSelezionata", brand);
-        model.addAttribute("modelloSelezionato", modello);
-
-    return "vetture/index";    
-    }
 
         
     
 
-@GetMapping("/show/{id}")
-    public String show(@PathVariable("id") Integer id, Model model){
-        Optional <Auto> optionalAuto = autorepository.findById(id);
-        if(optionalAuto.isPresent()){
-            model.addAttribute("auto", optionalAuto.get());
-            model.addAttribute("empty",false);
-        } else {
-            model.addAttribute("empty", true);
+    @GetMapping("/show/{id}")
+        public String show(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes){
+            try{
+                Auto auto = autoService.findById(id);
+                model.addAttribute("auto", auto);
+            return"vetture/show";
+        
+            }  catch(IllegalArgumentException e){
+                    redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+                return "redirect:/auto/";
+            }
+
         }
 
-        return "/vetture/show";
-    }
-
-@GetMapping("/create")
-    public String createAuto(Model model) {
-        model.addAttribute("auto", new Auto());
-        model.addAttribute("allCategories", categoriesRepository.findAll());
+    @GetMapping("/create")
+        public String createAuto(Model model) {
+            model.addAttribute("auto", new Auto());
+            model.addAttribute("allCategories", categoriesService.findAll());
         
-        return "vetture/create"; // template del form
-    }
+            return "vetture/create"; 
+        }
 
-@PostMapping("/create")
-    public String createSubmit(@ModelAttribute Auto auto) {
-        autorepository.save(auto);
+    @PostMapping("/create")
+        public String createSubmit
+            (@Valid @ModelAttribute("auto") Auto formAuto,
+            BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
+            if(bindingResult.hasErrors()){
+                model.addAttribute("allCategories", categoriesService.findAll());
+                return "vetture/create/";
+            }
+            try {
+                autoService.createAuto(formAuto);
+                redirectAttributes.addFlashAttribute("successMessage", "Auto aggiunta correttamente");
+                return "redirect:/auto/";
+            } catch (IllegalArgumentException e) {
+                model.addAttribute("errorMessage", e.getMessage());
+                model.addAttribute("allCategories", categoriesService.findAll());
+                return "vetture/create/";
+            }
     
-        return "redirect:/auto/"; // torna alla homepage
+        
     }
 
-@GetMapping("/edit/{id}")
-        public String edit(@PathVariable ("id") Integer id, Model model) {
-        Optional <Auto> optAuto = autorepository.findById(id);
-        if(optAuto.isEmpty()){
+    @GetMapping("/edit/{id}")
+        public String edit(@PathVariable ("id") Integer id, Model model, RedirectAttributes redirectAttributes) {
+        try{
+            Auto auto = autoService.findById(id);
+            model.addAttribute("auto", auto);
+            model.addAttribute("allCategories", categoriesService.findAll());
+            model.addAttribute("coloreBloccato", true);
+            model.addAttribute("modelloBloccato", true);
+            model.addAttribute("brandBloccato", true);
+            model.addAttribute("alimentazioneBloccato", true);
+            model.addAttribute("categoriaBloccato", true);
+
+            return "vetture/edit";
+        } catch(IllegalArgumentException e){
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/auto/";
         }
-        
-        Auto auto = optAuto.get();
-        
-        model.addAttribute("auto", auto);
-        model.addAttribute("allCategories", categoriesRepository.findAll());
-        model.addAttribute("categoriaBloccata", true);
-        model.addAttribute("coloreBloccato", true);
-        model.addAttribute("modelloBloccato",true);
-        model.addAttribute("brandBloccato", true);
-        return "/vetture/edit";
     }
 
-@PostMapping("/edit/{id}")
-    public String update(
-        @PathVariable Integer id,
-        @Valid @ModelAttribute("auto") Auto formAuto,
-        BindingResult bindingResult,
-        Model model) {
+    @PostMapping("/edit/{id}")
+        public String updateAuto(
+            @PathVariable("id") Integer id, 
+            @Valid @ModelAttribute("auto") Auto formAuto, 
+            BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
+                
+            if(bindingResult.hasErrors()){
+                model.addAttribute("auto", formAuto);
+                model.addAttribute("allCategories", categoriesService.findAll());
+                model.addAttribute("coloreBloccato", true);
+                model.addAttribute("modelloBloccato", true);
+                model.addAttribute("brandBloccato", true);
+                model.addAttribute("alimentazioneBloccato", true);
+                model.addAttribute("categoriaBloccato", true);
+                model.addAttribute("targaBloccato", true);
+                return "vetture/edit";
+            }
+            try {
+                autoService.editAuto(id, formAuto);
+                redirectAttributes.addFlashAttribute("successMessage", "Auto modificata con successo");
+                return "redirect:/auto/";
+            } catch(IllegalArgumentException e){
+                model.addAttribute("errorMessage", e.getMessage());
+                model.addAttribute("auto", formAuto);
+                model.addAttribute("allCategories", categoriesService.findAll());
+                model.addAttribute("coloreBloccato", true);
+                model.addAttribute("modelloBloccato", true);
+                model.addAttribute("brandBloccato", true);
+                model.addAttribute("alimentazioneBloccato", true);
+                model.addAttribute("categoriaBloccato", true);
+                model.addAttribute("targaBloccato", true);
 
-    if (bindingResult.hasErrors()) {
-        return "/vetture/edit";
-    }
+                return "vetture/index";
+            }
+        }
 
-    Optional<Auto> optAuto = autorepository.findById(id);
-
-    if (optAuto.isEmpty()) {
-        return "redirect:/auto/";
-    }
-
-    Auto oldAuto = optAuto.get();
-
-    oldAuto.setPrice(formAuto.getPrice());
-    oldAuto.setFoto(formAuto.getFoto());
-
-    autorepository.save(oldAuto);
-
-    return "redirect:/auto/";
-}
 
     @PostMapping("/delete/{id}")
-        public String delete (@PathVariable("id") Integer id) {
-        Optional<Auto> optAuto = autorepository.findById(id);
-        if(optAuto.isEmpty()){
-            return "redirect:/auto/";
+        public String deleteAuto(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+        try{
+            autoService.delete(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Auto eliminato con successo");
+        } catch(IllegalArgumentException e){
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-        autorepository.deleteById(id);
-        return "redirect:/auto/";
-    }
 
-    @GetMapping("/models")
-    @ResponseBody
-        public List<String> getModelsByBrand(@RequestParam String brand) {
-            return autorepository.findBybrandIgnoreCase(brand)
-                         .stream()
-                         .map(Auto::getModel)
-                         .distinct()
-                         .collect(Collectors.toList());
-}
+        return "redirect:/vetture/";
+    }
 
 }

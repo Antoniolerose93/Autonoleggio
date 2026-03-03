@@ -19,12 +19,17 @@
                     <input type="hidden" th:field="*{id}">
                     <div class="mb-3">
                         <label for="brand" class="form-label">Brand</label>
-                        <input type="text" th:field="*{brand}" class="form-control" id="brand" placeholder="Inserisci il brand" th:readonly= "${brandBloccato}">
+                        <input type="text" th:field="*{brand}" class="form-control" id="brand" placeholder="Inserisci il brand" th:readonly = "${brandBloccato}">
                     </div>
 
                     <div class="mb-3">
                         <label for="model" class="form-label">Modello</label>
                         <input type="text" th:field="*{model}" class="form-control" id="model" placeholder="Inserisci il modello" th:readonly= "${modelloBloccato}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="targa" class="form-label">Targa</label>
+                        <input type="text" th:field="*{targa}" class="form-control" id="targa" placeholder="Inserisci la targa" th:readonly="${targaBloccato}">
                     </div>
 
                     <div class="mb-3">
@@ -39,9 +44,10 @@
                     
                     <div class="mb-3">
                         <label class="form-label">Categoria</label>
+                        <input type="hidden" name="category" th:value="${auto.category.id}">
                         <div th:each="cat : ${allCategories}">
-                            <input type="radio" th:field="*{category}" th:disabled ="${categoriaBloccata}" th:value="${cat.id}" th:id="'cat-' + ${cat.id}" class="form-check-input">
-                            <label th:for="'cat-' + ${cat.id}" th:text="${cat.categoryDescription}" class="form-check-label"></label>
+                            <input type="radio" th:disabled ="${categoriaBloccato}" th:checked="${auto.category != null && auto.category.id == cat.id}" th:value="${cat.id}" th:id="'cat-' + ${cat.id}" class="form-check-input">
+                            <label th:for="'cat-' + ${cat.id}" th:text="${cat.name}" class="form-check-label"></label>
                         </div>
                         <div th:if="${#fields.hasErrors('category')}" class="invalid-feedback d-block">
                             <ul>
@@ -58,7 +64,7 @@
 
                     <div class="mb-3">
                         <label for="fuel" class="form-label">Alimentazione</label>
-                        <input type="text" th:field="*{fuel}" class="form-control" id="fuel" placeholder="Inserisci l'alimentazione" readonly>
+                        <input type="text" th:field="*{fuel}" class="form-control" id="fuel" placeholder="Inserisci l'alimentazione" th:readonly="${alimentazioneBloccato}">
                     </div>
 
                     <div class="mb-3">
@@ -70,6 +76,12 @@
                         <a th:href="@{/auto/}" class="btn btn-secondary">Annulla</a>
                         <button type="submit" class="btn btn-primary">Salva Auto</button>
                     </div>
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
+                            <p>Il form non può essere inviato per i seguenti motivi:</p>
+                            <ul>
+                                <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
+                            </ul>
+                        </div>
                 </form>
             </div>
         </div>

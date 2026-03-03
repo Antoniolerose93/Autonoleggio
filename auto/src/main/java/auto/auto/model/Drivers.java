@@ -2,6 +2,7 @@ package auto.auto.model;
 
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name ="drivers")
@@ -19,13 +20,16 @@ public class Drivers {
 @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+@NotBlank(message="Inserisci il nome")
     private String name;
 
+@NotBlank(message="Inserisci il cognome")
     private String surname;
 
-@NotNull
 @NotBlank(message ="patente obbligatoria")
-    private String drivingLicense;
+@Size(min = 10, max = 10, message ="Il numero della patente è composto da 10 caratteri")
+@Column(unique = true)
+private String drivingLicense;
 
 @OneToMany
     private List<Rental> rent;

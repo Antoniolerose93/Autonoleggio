@@ -19,12 +19,17 @@
                 <form th:action="@{/auto/create}" th:object="${auto}" method="post">
                     <div class="mb-3">
                         <label for="brand" class="form-label">Brand</label>
-                        <input type="text" th:field="*{brand}" class="form-control" id="brand" placeholder="Inserisci il brand" required>
+                        <input type="text" th:field="*{brand}" class="form-control" id="brand" placeholder="Inserisci il brand">
                     </div>
 
                     <div class="mb-3">
                         <label for="model" class="form-label">Modello</label>
-                        <input type="text" th:field="*{model}" class="form-control" id="model" placeholder="Inserisci il modello" required>
+                        <input type="text" th:field="*{model}" class="form-control" id="model" placeholder="Inserisci il modello">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="targa" class="form-label">Targa</label>
+                        <input type="text" th:field="*{targa}" class="form-control" id="targa" placeholder="Inserisci la targa">
                     </div>
 
                     <div class="mb-3">
@@ -40,7 +45,7 @@
                         <label class="form-label">Categoria</label>
                         <div th:each="cat : ${allCategories}">
                             <input type="radio" th:field="*{category}" th:value="${cat.id}" th:id="'cat-' + ${cat.id}" class="form-check-input">
-                            <label th:for="'cat-' + ${cat.id}" th:text="${cat.categoryDescription}" class="form-check-label"></label>
+                            <label th:for="'cat-' + ${cat.id}" th:text="${cat.name}" class="form-check-label"></label>
                         </div>
                         <div th:if="${#fields.hasErrors('category')}" class="invalid-feedback d-block">
                             <ul>

@@ -3,6 +3,7 @@ package auto.auto.model;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,7 +13,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "auto")
@@ -23,18 +23,25 @@ public class Auto {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull(message = "Brand non può essere nullo")
+    @NotBlank(message = "Inserisci il brand")
     private String brand;
 
+    @NotBlank(message = "Inserisci il modello")
     private String model;
 
+    @NotBlank(message = "Inserisci il colore")
     private String color;
+
+    @NotBlank(message="Inserisci la targa")
+    @Column(unique = true)
+    private String targa;
 
     private int price;
 
-    @NotNull
+    @NotBlank(message = "Inserisci la descrizione")
     private String description;
 
+    @NotBlank(message = "Inserisci il tipo di alimentazione")
     private String fuel;
 
     @NotBlank(message ="url foto obbligatorio")
@@ -112,6 +119,14 @@ public class Auto {
 
     public void setFoto(String foto){
         this.foto = foto;
+    }
+
+    public String getTarga(){
+        return targa;
+    }
+
+    public void setTarga(String targa){
+        this.targa = targa;
     }
 
     public List<Rental> getRentals() {

@@ -6,99 +6,136 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.8/css/bootstrap.min.css}" />
     <link rel="stylesheet" th:href="@{/app.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <title>Noleggio Auto</title>
 </head>
 
 <body>
-    <nav th:replace="~{navbar :: navbar('Auto')}"></nav> 
+    <nav th:replace="~{navbar :: navbar('Auto')}"></nav>
+    
     <div class="container">
         <div class="content">
-            <h1 class="text-center py-3">Auto disponibili</h1>
-            <hr/>
-            <h4 class="text-center mb-3">Scegli la tua auto</h4>
-                <form th:action="@{/auto/}" method="get">
-                    <div class="row">                
-                        <div class="col-3 mb-3">            
-                            <select id= "brandSelect" name="brand" class="form-select form-select-lg mb-3" aria-label="Seleziona il brand">
-                                <option value="" selected>Scegli il brand</option>
-                                <option th:each="b : ${brands}" 
-                                th:value="${b}"
-                                th:text="${b}"
-                                th:selected="${marcaSelezionata == b}">
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-3 mb-3">
-                            <select id="modelSelect" name="modello" class="form-select form-select-lg mb-3" aria-label="Seleziona modello">
-                                <option value="">Scegli il modello</option>
-                                <option th:each="m : ${modelli}" 
-                                th:value="${m}" 
-                                th:text="${m}" 
-                                th:selected ="${modelloSelezionato ==m}"></option>
-                            </select>
-                        </div>
-                        
-                        <div class="col-3 mb-3">
-                            <button type="submit" class="btn btn-primary">Visualizza vetture</button>
-                        </div>
-                </form>
-                        <div class="col-3 mb-3  text-end">
-                            <a class="btn btn-primary" th:href="@{/auto/create}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-plus-fill" viewBox="0 0 16 16">
-                            <path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01zM8.5 6v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 1 0"/>
-                            </svg>
-                            Aggiungi auto
-                            </a>
-                              <a class="btn btn-warning" th:href="@{/rents/}">
-                            Auto noleggiate
-                            </a>
-                        </div>
-                    </div>
-                <div class="row mt-4">
-                    <div class="col-md-4 mb-4" th:each="auto : ${list}">
-                        <div class="card h-100">
-                            <img th:src="${auto.foto}" class="car-img" alt="Immagine auto">
-                                <div class="card-body">
-                                    <h5 class="card-title" th:text="${auto.brand} + ' ' + ${auto.model}"></h5>
-                                        <div class="row mb-2">
-                                            <div class ="col">
-                                                <p class="card-text"><strong>Colore:</strong> <span th:text="${auto.color}"></span></p>
-                                            </div>
-                                            <div class="col">
-                                                <p class="card-text"><strong>Prezzo al giorno:</strong> €<span th:text="${auto.price}"></span></p>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-2">
-                                            <div class="col">
-                                                <p class="card-text"><strong>Alimentazione:</strong> <span th:text="${auto.fuel}"></span></p>
-                                            </div>
-                                            <div class="col">
-                                                <p class="card-text"><strong>Categoria:</strong> 
-                                                    <div th:if="${auto.category !=null}">
-                                                        <span th:text="${auto.category.categoryDescription}"></span>
-                                                    </div>
-                                                    <div th:if="${auto.category == null}">
-                                                        Nessuna categoria
-                                                    </div>
-                                                </p>
-                                            </div>
-                                        </div>                                     
-                                        <div class="d-flex justify-content-between">
-                                            <a th:href="@{/auto/show/{id}(id=${auto.id})}" class="btn btn-primary">Dettagli</a>
-                                            <a th:href="@{/auto/edit/{id}(id=${auto.id})}" class="btn btn-secondary">Modifica</a>
-                                            <a th:href="@{/rents/quickrent(autoId=${auto.id})}" class="btn btn-success">Noleggia</a>
-                                            <form th:action="@{/auto/delete/{id}(id=${auto.id})}"
-                                            method="post" onsubmit="return confirm('Sei sicuro di voler cancellare questa auto?');">
-                                                <button type="submit" class="btn btn-danger">Elimina</button>
-                                            </form>
-                                        </div>
-                                </div>
-                        </div>
-                    </div>
+            <h1 class="text-center py-3">Vetture disponibili</h1>
+            <hr />
+
+            <!-- MESSAGGI DI SUCCESSO -->
+            <th:block th:if="${successMessage != null}">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <span th:text="${successMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
+            </th:block>
+
+            <!-- 1. RIGA BOTTONI ALLINEATI -->
+            <div class="row align-items-center mb-4">
+                <div class="col-6 text-start">
+                    <button class="btn btn-primary shadow-sm" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#searchCollapse">
+                        <i class="bi bi-search"></i>Trova la tua auto
+                    </button>
+                </div>
+
+                
+                <div class="col-6 text-end" sec:authorize="hasAuthority('ADMIN')">
+                    <a class="btn btn-primary" th:href="@{/auto/create}">
+                        <i class="bi bi-car-front"></i> Aggiungi auto
+                    </a>
+                </div>
+            </div>
+
+            <!-- 2. PANNELLO RICERCA (FUORI DALLA ROW DEI BOTTONI) -->
+            <div class="collapse mb-4" id="searchCollapse" th:classappend="${selectedBrand != null} ? 'show' : ''">
+                <div class="card card-body bg-light border-dark-subtle shadow-sm">
+                    <form th:action="@{/auto/}" method="get" class="row g-3">
+
+                        <!-- SELECT MARCA -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">Marca</label>
+                            <select name="brand" class="form-select shadow-sm" onchange="this.form.submit()">
+                                <option value="">Tutte le marche</option>
+                                <option th:each="b : ${brands}" th:value="${b}" th:text="${b}"
+                                    th:selected="${b == selectedBrand}"></option>
+                            </select>
+                        </div>
+
+                        <!-- SELECT MODELLO -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">Modello</label>
+                            <select name="modelName" class="form-select shadow-sm" onchange="this.form.submit()"
+                                th:disabled="${models == null || models.isEmpty()}">
+                                <option value="">Seleziona modello</option>
+                                <option th:each="m : ${models}" th:value="${m}" th:text="${m}"
+                                    th:selected="${m == selectedModel}"></option>
+                            </select>
+                        </div>
+
+                        <!-- SELECT ALIMENTAZIONE -->
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">Alimentazione</label>
+                            <select name="fuel" class="form-select shadow-sm"
+                                th:disabled="${fuels == null || fuels.isEmpty()}">
+                                <option value="">Tutte le alimentazioni</option>
+                                <option th:each="f : ${fuels}" th:value="${f}" th:text="${f}"
+                                    th:selected="${f == selectedFuel}"></option>
+                            </select>
+                        </div>
+
+                        <div class="col-12 text-center mt-3">
+                            <a th:href="@{/auto/}" class="btn btn-outline-secondary btn-sm me-2 shadow-sm">Reset</a>
+                            <button type="submit" class="btn btn-success btn-sm shadow-sm">Mostra Risultati</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+                    <div th:if="${auto.isEmpty()}" class="alert alert-info text-center mt-4">
+                        <i class="bi bi-info-circle"></i> Nessuna auto corrisponde alla ricerca.
+                    </div>
+                    <main>
+                        <div class="row mt-4">
+                            <div class="col-md-4 mb-4" th:each="auto : ${auto}">
+                                <div class="card border-dark-subtle">
+                                    <div class="card-header p-0 overflow-hidden">
+                                        <img th:src="${auto.foto}" class="car-img" alt="Immagine auto">
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="card-title" th:text="${auto.brand} + ' ' + ${auto.model}"></h5>
+                                            <div class="row mb-2">
+                                                <div class ="col">
+                                                    <p class="card-text"><strong>Colore:</strong> <span th:text="${auto.color}"></span></p>
+                                                </div>
+                                                <div class="col">
+                                                    <p class="card-text"><strong>Prezzo al giorno:</strong> €<span th:text="${auto.price}"></span></p>
+                                                </div>
+                                            </div>
+                                            <div class="row mb-2">
+                                                <div class="col">
+                                                    <p class="card-text"><strong>Alimentazione:</strong> <span th:text="${auto.fuel}"></span></p>
+                                                </div>
+                                                <div class="col">
+                                                    <p class="card-text">
+                                                        <strong>Categoria:</strong> 
+                                                        <span th:if="${auto.category != null}" th:text="${auto.category.name}"></span>
+                                                        <span th:if="${auto.category == null}" class="text-muted">Nessuna categoria</span>
+                                                    </p>
+                                                </div>
+                                            </div>                                     
+                                                <div class="d-flex justify-content-between">
+                                                    <a th:href="@{/auto/show/{id}(id=${auto.id})}" class="btn btn-primary">Dettagli</a>
+                                                    <a th:href="@{/auto/edit/{id}(id=${auto.id})}" class="btn btn-secondary" sec:authorize="hasAuthority('ADMIN')">Modifica</a>
+                                                    <a th:href="@{/rents/quickrent(autoId=${auto.id})}" class="btn btn-success">Noleggia</a>
+                                                    <form th:action="@{/auto/delete/{id}(id=${auto.id})}"
+                                                    method="post" sec:authorize="hasAuthority('ADMIN')" onsubmit="return confirm('Sei sicuro di voler cancellare questa auto?');">
+                                                        <button type="submit" class="btn btn-danger" sec:authorize="hasAuthority('ADMIN')">Elimina</button>
+                                                    </form>
+                                                </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                
         </div>      
     </div>
-    <script th:src="@{/app.js}"></script>
     <script th:src="@{/webjars/bootstrap/5.3.8/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

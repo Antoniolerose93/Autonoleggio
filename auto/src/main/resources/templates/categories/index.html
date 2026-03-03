@@ -17,18 +17,18 @@
         <div class="row py-3">
             <div class="col-6">
                 <form id="categories-form" th:action="@{/categories/create}" method="post" th:object="${categoriesObj}">
-                    <ul th:if="${#fields.hasErrors('categoryDescription')}">
-                        <li th:each="err : ${#fields.errors('categoryDescription')}" th:text="${err}">Input non corretto</li>
+                    <ul th:if="${#fields.hasErrors('name')}">
+                        <li th:each="err : ${#fields.errors('name')}" th:text="${err}">Input non corretto</li>
                     </ul>
                     <div class="input-group mb-3">
-                        <input type="text" id="category" th:field="*{categoryDescription}" class="form-control">
+                        <input type="text" id="category" th:field="*{name}" class="form-control">
                         <button type="submit" class="btn btn-primary"> Aggiungi </button>
                     </div>
                 </form>
-                <ul class="list-group" th:if="${categories.size() > 0}">
-                    <li class="list-group-item d-flex justify-content-between" th:each="item : ${categories}">
+                <ul class="list-group" th:if="${listCategories.size() > 0}">
+                    <li class="list-group-item d-flex justify-content-between" th:each="item : ${listCategories}">
                         <span th:text="|Auto di questa categoria ${item.auto.size()}|"></span>
-                        <span th:text="${item.categoryDescription}"></span>
+                        <span th:text="${item.name}"></span>
                         <form th:action="@{|/categories/delete/${item.id}|}" method="post">
                             <button class="btn btn-danger" type="submit"
                             onclick="return confirm('Sei sicuro di voler eliminare questa categoria?')">
@@ -37,7 +37,7 @@
                         </form>
                     </li>
                 </ul>
-                <div class="alert alert-primary" role="alert" th:unless="${categories.size() > 0}">
+                <div class="alert alert-primary" role="alert" th:unless="${listCategories.size() > 0}">
                     Non ci sono categorie nel database
                 </div>
             </div>

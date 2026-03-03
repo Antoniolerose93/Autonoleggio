@@ -1,22 +1,24 @@
 package auto.auto.controller;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import auto.auto.model.Auto;
 import auto.auto.model.Rental;
-import auto.auto.repository.AutoRepository;
-import auto.auto.repository.RentalRepository;
+import auto.auto.service.AutoService;
 import auto.auto.service.RentalService;
+import jakarta.validation.Valid;
 
 
 @Controller
@@ -24,114 +26,116 @@ import auto.auto.service.RentalService;
 public class Rentalcontroller {
 
     @Autowired
-    private RentalRepository rentalRepository;
-
-    @Autowired
-    private AutoRepository autoRepository;
+    private AutoService autoService;
 
     @Autowired
     private RentalService rentalService;
 
     @GetMapping("/")
-    public String rentals(Model model) {
-    model.addAttribute("rentals", rentalRepository.findAll());
+    public String indexRents(Model model) {
+    model.addAttribute("rentals", rentalService.findAll());
     return "rents/rentals"; // template corretto
     }
     
     @GetMapping("/show/{id}")
-    public String show(@PathVariable("id") Integer id, Model model){
-        Optional<Rental> optionalRental = rentalRepository.findById(id);
-        if(optionalRental.isPresent()){
-            model.addAttribute("rental", optionalRental.get());
-            model.addAttribute("empty",false);
-        } else {
-            model.addAttribute("empty", true);
+    public String showRent(@PathVariable("id") Integer id, Model model, RedirectAttributes redirectAttributes){
+        try{
+            Rental rent = rentalService.findById(id);
+            model.addAttribute("rentals", rent);
+            return "rents/show";
+        } catch(IllegalArgumentException e){
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/rents/";
         }
-
-        return "/rents/show";
+        
     }
 
     @GetMapping("/quickrent")
-    public String quickCreate(@RequestParam("autoId") Integer autoId, Model model) {
-    Rental rent = new Rental();
-    autoRepository.findById(autoId).ifPresent(rent::setAuto);
+    public String quickCreate(@RequestParam("autoId") Integer autoId, Model model, RedirectAttributes redirectAttributes) {
+    try{
+        Auto selectedAuto = autoService.findById(autoId);
+        Rental rent = new Rental();
+        rent.setAuto(selectedAuto);
 
-    model.addAttribute("rent", rent);
-    model.addAttribute("auto", rent.getAuto()); // per mostrare i dettagli
+        model.addAttribute("rent", rent);
+        model.addAttribute("auto", selectedAuto);
+        model.addAttribute("availabilityMessage", rentalService.getAvailabilityMessage(autoId, LocalDate.now()));
+        
+        return "rents/quickrent";
 
-    // Messaggio di disponibilità completo
-    RentalService.DisponibilitaResidua disponibilita = rentalService.prossimaDataDisponibile(autoId, LocalDate.now());
-    model.addAttribute("messaggioDisponibilita",
-        "Auto disponibile fino al: " + disponibilita.getDisponibileFino() +
-        ". uccessivamente disponibile nuovamente dal: " + disponibilita.getDisponibileDa());
-
-    return "/rents/quickrent";
+    } catch (Exception e){
+        redirectAttributes.addFlashAttribute("errorMessage", "L'auto selezionata non esiste.");
+        return "redirect:/auto/";
     }
 
-    
+    }
+
+    @PostMapping("/quickrent")
+    public String quickStore(
+        @Valid @ModelAttribute("rent") Rental rent,
+        BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes){
+            if(bindingResult.hasErrors()){
+                model.addAttribute("auto", autoService.findById(rent.getAuto().getId()));
+                model.addAttribute("availabilityMessage", rentalService.getAvailabilityMessage(rent.getAuto().getId(), LocalDate.now()));
+                return "rents/quickrent";
+            }
+            try{
+                rentalService.saveRent(rent);
+                redirectAttributes.addFlashAttribute("successMessage", "Prenotazione effettuata con successo");
+                return "redirect:/auto/";
+            } catch(IllegalArgumentException e){
+                model.addAttribute("errorMessage", e.getMessage());
+                model.addAttribute("auto", autoService.findById(rent.getAuto().getId()));
+                model.addAttribute("availabilityMessage", rentalService.getAvailabilityMessage(rent.getAuto().getId(), LocalDate.now()));
+                return "rents/quickrent";
+            }
+
+        }
+        
     @GetMapping("/create")
     public String createRent(Model model) {
         model.addAttribute("rent", new Rental());
-        model.addAttribute("vetture", autoRepository.findAll());
-        
-        
+        model.addAttribute("vetture", autoService.findAll());
+                
         return "rents/create"; // template del form
     }
 
     @PostMapping("/create")
-    public String createSubmit(@ModelAttribute Rental rent, Model model) {
-    // Recupero l'auto dal repository
-        autoRepository.findById(rent.getAuto().getId()).ifPresent(rent::setAuto);
+    public String createSubmit(
+        @Valid @ModelAttribute("rent") Rental rent,
+        BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
+    
+        if(bindingResult.hasErrors()){
+            model.addAttribute("vetture", autoService.findAll());
+            return "rents/create";
+        }
 
-    LocalDate today = LocalDate.now();
-    if (rent.getRentStartDate().isBefore(today) || rent.getRentEndDate().isBefore(today)) {
-        model.addAttribute("error", "Le date di inizio e fine del noleggio non possono essere nel passato");
-        model.addAttribute("auto", rent.getAuto());
-        model.addAttribute("rent", rent);
-        model.addAttribute("vetture", autoRepository.findAll());
+        try {
+            rentalService.saveRent(rent);
+            redirectAttributes.addFlashAttribute("successMessage", "Prenotazione effettuata con successo");
+            return "redirect:/auto/";
 
-        // Prevedo il messaggio di disponibilità anche qui
-        RentalService.DisponibilitaResidua disponibilita = rentalService.prossimaDataDisponibile(rent.getAuto().getId(), today);
-        model.addAttribute("messaggioDisponibilita",
-            "Auto disponibile fino al: " + disponibilita.getDisponibileFino() +
-            " e disponibile nuovamente dal: " + disponibilita.getDisponibileDa());
-
-        return "rents/create";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/auto/";
+        }
+       
     }
-
-    // Controllo disponibilità tramite il service
-    if (!rentalService.disponibilita(rent)) {
-        model.addAttribute("error", "Auto non disponibile per le date selezionate");
-    }
-
-    // Calcolo sempre il messaggio di disponibilità
-    RentalService.DisponibilitaResidua disponibilita = rentalService.prossimaDataDisponibile(rent.getAuto().getId(), today);
-    model.addAttribute("messaggioDisponibilita",
-        "Auto disponibile fino al: " + disponibilita.getDisponibileFino() +
-        " e disponibile nuovamente dal: " + disponibilita.getDisponibileDa());
-
-    // Se l'auto non è disponibile, rimando al form
-    if (!rentalService.disponibilita(rent)) {
-        model.addAttribute("auto", rent.getAuto());
-        model.addAttribute("rent", rent);
-        model.addAttribute("vetture", autoRepository.findAll());
-        return "rents/create";
-    }
-
-    // Salvataggio noleggio
-    rent.setTotalPrice(rentalService.calcolaPrezzoTotale(rent));
-    rentalRepository.save(rent);
-
-        return "redirect:/rents/";
-    }
-
 
     @PostMapping("/delete/{id}")
-        public String delete (@PathVariable("id") Integer id) {
-        Rental rent = rentalRepository.findById(id).get();
-        rentalRepository.deleteById(id);
-        return "redirect:/rents/";
+        public String deleteRent(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
+        try{
+            rentalService.delete(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Noleggio eliminato con successo");
+            return "redirect:/rents/";
+        } catch(IllegalArgumentException e){
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/rents/";
+        }
+
+        
     }
+
 
 
 }

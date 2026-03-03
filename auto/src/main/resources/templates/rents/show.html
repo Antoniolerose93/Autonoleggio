@@ -12,37 +12,37 @@
     <nav th:replace="~{navbar :: navbar('Auto')}"></nav> 
 
     <main>
-        <div class="container mt-4" th:if="${rental != null}">
-            <h1>Dettaglio Noleggio #<span th:text="${rental.id}"></span></h1>
+        <div class="container mt-4" th:if="${rentals != null}">
+            <h1>Dettaglio Noleggio #<span th:text="${rentals.id}"></span></h1>
             <hr/>
 
             <div class="row mb-3">
                 <div class="col-4"><strong>Autista</strong></div>
-                <div class="col-8" th:text="${rental.driver.name} + ' ' + ${rental.driver.surname}"></div>
+                <div class="col-8" th:text="${rentals.driver.name} + ' ' + ${rentals.driver.surname}"></div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-4"><strong>Auto</strong></div>
-                <div class="col-8" th:text="${rental.auto.brand} + ' ' + ${rental.auto.model}"></div>
+                <div class="col-8" th:text="${rentals.auto.brand} + ' ' + ${rentals.auto.model}"></div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-4"><strong>Data inizio noleggio</strong></div>
-                <div class="col-8" th:text="${rental.rentStartDate}"></div>
+                <div class="col-8" th:text="${rentals.rentStartDate}"></div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-4"><strong>Data fine noleggio</strong></div>
-                <div class="col-8" th:text="${rental.rentEndDate}"></div>
+                <div class="col-8" th:text="${rentals.rentEndDate}"></div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-4"><strong>Prezzo totale</strong></div>
-                <div class="col-8" th:text="${T(java.lang.String).format('%.2f €', rental.totalPrice)}"></div>
+                <div class="col-8" th:text="${T(java.lang.String).format('%.2f €', rentals.totalPrice)}"></div>
             </div>
             <div class = "row mb-3">
                 <div class ="col-5">
-                    <img th:src="${rental.auto.foto}" class="img-fluid" alt="Responsive image">
+                    <img th:src="${rentals.auto.foto}" class="img-fluid" alt="Responsive image">
                 </div>
             </div>
         
@@ -50,9 +50,10 @@
     </main>
 
     <!-- Messaggio se il noleggio non esiste -->
-    <div class="container mt-4" th:if="${rental == null}">
-        <div class="alert alert-warning">
+    <div class="container mt-4" th:if="${rentals == null}">
+        <div class="alert alert-warning" role="alert">
             Noleggio non trovato
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
 

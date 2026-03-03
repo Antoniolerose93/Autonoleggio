@@ -9,10 +9,18 @@ import auto.auto.model.Auto;
 
 public interface AutoRepository extends JpaRepository<Auto, Integer> {
 
-    public List<Auto> findBymodelContainingIgnoreCase(String model);
+    List<Auto> findByModelIgnoreCase(String model);
 
-    public List<Auto> findBybrandIgnoreCase(String brand);
+    List<Auto> findByBrandContainingIgnoreCaseOrModelContainingIgnoreCase(String brand, String model);
 
-    public Optional<Auto> findByModel(String model);
+    List<Auto> findByBrandIgnoreCase(String brand);
+
+    Optional<Auto> findByModel(String model);
+
+    Optional<Auto> findByTargaIgnoreCase(String targa);
+
+    List <Auto> findByBrandAndFuel(String brand, String fuel);
+
+    List<Auto> findByFuel(String fuel);
 
 }

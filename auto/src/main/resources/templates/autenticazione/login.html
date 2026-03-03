@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.8/css/bootstrap.min.css}" />
+ 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <title>Login - Noleggio auto</title>
+</head>
+<body class="bg-light">
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                
+                <!-- Messaggio dopo il Logout -->
+            <div th:if="${param.logout}" class="alert alert-success alert-dismissible fade show" role ="alert">
+                <span> A presto </span>    
+                <button type ="button" class ="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+                <!-- Card -->
+                <div class="card border-primary shadow-sm">
+                    <div class="card-header bg-primary text-white text-center py-3">
+                        <h5 class="mb-0 fw-bold text-uppercase">ACCEDI</h5>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        
+                        <!-- Messaggio di errore-->
+                        <div th:if="${param.error}" class="alert alert-danger border-danger py-2 small mb-4">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            Username o password non validi.
+                        </div>
+
+                        <form th:action="@{/login}" method="post">
+                            <!-- Username -->
+                            <div class="mb-3">
+                                <label for="username" class="form-label small fw-bold">USERNAME</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-primary"><i class="bi bi-person"></i></span>
+                                    <input type="text" name="username" id="username" class="form-control border-primary" placeholder="Inserisci username" required autofocus>
+                                </div>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="mb-3">
+                                <label for="password" class="form-label small fw-bold">PASSWORD</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-primary"><i class="bi bi-lock"></i></span>
+                                    <input type="password" name="password" id="password" class="form-control border-primary" placeholder="********" required>
+                                </div>
+                            </div>
+
+                            <!-- Tasto Login -->
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary fw-bold border-primary">
+                                    ACCEDI <i class="bi bi-box-arrow-in-right ms-1"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/webjars/bootstrap/5.3.8/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

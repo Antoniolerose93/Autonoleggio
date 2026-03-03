@@ -1,8 +1,8 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.8/css/bootstrap.min.css}" />
+<link rel="stylesheet" th:href="@{/css/app.css}">
 
-    <link rel="stylesheet" th:href="@{/css/app.css}">
 <body>
     <nav th:fragment="navbar(current)" class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
@@ -20,15 +20,31 @@
                             th:classAppend="${current == 'Auto'} ? active : not-active">Auto</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" th:href="@{/rents/}"
+                        <a class="nav-link link-dark fw-bold" th:href="@{/rents/create}">
+                            <i class="bi bi-cart-plus"></i>
+                            Prenota la tua auto
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" th:href="@{/rents/}" sec:authorize="hasAuthority('ADMIN')"
                             th:classAppend="${current == 'Rents'} ? active : not-active">Noleggi</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" th:href="@{/categories/}"
+                        <a class="nav-link" aria-current="page" th:href="@{/categories/}" sec:authorize="hasAuthority('ADMIN')"
                             th:classAppend="${current == 'Categories'} ? active : not-active">Categorie di vetture</a>
                     </li>
 
                 </ul>
+            </div>
+            <div class="navbar-text me-3">
+                Benvenuto:<strong><span sec:authentication="principal.authorities"></strong></span>
+                
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-primary">
+                        LOGOUT <i class="bi bi-box-arrow-right"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </nav>

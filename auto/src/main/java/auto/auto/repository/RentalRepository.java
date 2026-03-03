@@ -10,17 +10,14 @@ import auto.auto.model.Rental;
 
 public interface RentalRepository extends JpaRepository<Rental, Integer> {
 
-    public List<Rental> findByAutoId(Integer autoId);
+    List<Rental> findByAutoId(Integer autoId);
 
-    public List<Rental> findByDriverId(Integer driverId);
+    List<Rental> findByDriverId(Integer driverId);
 
-    Optional<Rental> findTopByAutoIdAndRentEndDateAfterOrderByRentEndDateDesc(
-        Integer autoId, LocalDate currentDate);
+    Optional<Rental> findTopByAutoIdAndRentEndDateAfterOrderByRentEndDateDesc(Integer autoId, LocalDate currentDate);
 
-    List<Rental> findByAutoIdAndRentEndDateGreaterThanEqualAndRentStartDateLessThanEqual(
-    Integer autoId, LocalDate startDate, LocalDate endDate);
+    List<Rental> findByAutoIdAndRentEndDateGreaterThanEqualAndRentStartDateLessThanEqual(Integer autoId, LocalDate startDate, LocalDate endDate);
 
-    List<Rental> findByAutoIdAndRentStartDateGreaterThanEqualOrderByRentStartDateAsc(
-    Integer autoId, LocalDate startDate);
+    List<Rental> findByAutoIdAndRentStartDateGreaterThanEqualOrderByRentStartDateAsc(Integer autoId, LocalDate startDate);
 
 }

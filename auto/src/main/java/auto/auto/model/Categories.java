@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name ="categories")
@@ -19,8 +20,9 @@ public class Categories {
 @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "category_description") 
-    private String categoryDescription;
+    @NotBlank
+    @Column(name = "name") 
+    private String name;
 
 @OneToMany(mappedBy= "category")
     private List <Auto> auto;
@@ -33,12 +35,12 @@ public void setId(Integer id) {
     this.id = id;
 }
 
-public String getCategoryDescription() {
-    return categoryDescription;
+public String getName() {
+    return name;
 }
 
-public void setCategoryDescription(String categoryDescription) {
-    this.categoryDescription = categoryDescription;
+public void setName(String name) {
+    this.name = name;
 }
 
 public List<Auto> getAuto() {

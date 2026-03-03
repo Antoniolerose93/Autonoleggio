@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
@@ -22,15 +23,14 @@ public class Rental {
 
     private Integer id;
 
-    private String rentDescription;
-
-@NotNull
+@FutureOrPresent(message="La data di inizio non può essere nel passato")
     private LocalDate rentStartDate;
 
-@NotNull
+@FutureOrPresent(message="La data di fine non può essere nel passato")
     private LocalDate rentEndDate;
 
-    private Double totalPrice;
+@NotNull
+    private double totalPrice;
 
 @ManyToOne
 @JoinColumn(name = "auto_id", nullable = false)
@@ -46,14 +46,6 @@ public class Rental {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getRentDescription() {
-        return rentDescription;
-    }
-
-    public void setRentDescription(String rentDescription) {
-        this.rentDescription = rentDescription;
     }
 
     public LocalDate getRentStartDate() {
